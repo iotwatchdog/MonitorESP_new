@@ -1,0 +1,138 @@
+<div class="container mt-3">
+    <div data-role="panel" data-title-caption="Painel" data-collapsible="true"
+        data-title-icon="<span class='mif-table'></span>">
+        <div class="row">
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Empresa</label>
+                <select id="ddl-company" data-role="select">
+
+                </select>
+            </div>
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Filial</label>
+                <select id="ddl-branch" data-role="select">
+
+                </select>
+            </div>
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Departamento</label>
+                <select id="ddl-department" data-role="select">
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Id</label>
+                <input id="ttb-panel-id" type="text" data-role="input" disabled>
+            </div>
+            <div class="cell-lg-10 cell-sm-10">
+                <label>Nome</label>
+                <input id="ttb-panel-name" type="text" data-role="input">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <button class="button primary" id="btn-salvar">Salvar</button>
+                <button class="button alert" id="btn-excluir">Excluir</button>
+                <button class="button secondary" id="btn-novo">Novo</button>
+                <button class="button" id="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <table id="table-panel" class="table compact striped table-border" data-role="table"
+                    data-cls-component="mt-2" data-rows="10" data-show-search="true" data-pagination="true"
+                    data-show-all-pages="false" data-check="true" data-check-type="1"
+                    data-on-check-click="handleCheckboxClick">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function handleCheckboxClick(e) {
+        const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
+        const rowData = {
+            id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
+            name: row.cells[3].textContent  // Obtém o conteúdo da terceira célula
+        };
+        $('#ttb-panel-id').val(rowData.id)
+        $('#ttb-panel-name').val(rowData.name)
+    }
+
+    $(document).ready(function () {
+        getCompanyList();
+        $('#ddl-company').on('change', function () {
+            getBranchList($(this).val())
+            $('#ttb-panel-id, #ttb-panel-name').val('');
+
+        });
+        $('#ddl-branch').on('change', function () {
+            getDepartmentList($(this).val())
+        });
+
+        $('#ddl-department').on('change', function () {
+            var selectedId = $(this).val();
+            $('#table-panel').data('table').loadData(`${urlserver}/get-table-panel?iddepartment=${selectedId}`, true);
+        });
+
+        $('#btn-salvar').on('click', function (event) {
+            var id = $('#ttb-panel-id').val();
+            var iddepartment = $('#ddl-department').val();
+            var name = $('#ttb-panel-name').val();
+            var postData = {
+                id: id,
+                iddepartment: iddepartment,
+                name: name,
+                isdeleted: 0
+            };
+            console.log(postData)
+            $.ajax({
+                url: urlserver + '/post-panel', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    if ($('#ttb-panel-id').val() === '') {
+                        $('#ttb-panel-id').val(response.id);
+                    }
+                    $('#table-panel').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-excluir').on('click', function (event) {
+            var id = $('#ttb-panel-id').val();
+            var iddepartment = $('#ddl-department').val();
+            var name = $('#ttb-panel-name').val();
+            var postData = {
+                id: id,
+                iddepartment: iddepartment,
+                name: name,
+                isdeleted: 1
+            };
+            $.ajax({
+                url: urlserver + '/post-panel', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    $('#ttb-panel-id, #ttb-panel-name').val('');
+                    $('#table-panel').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-novo, #btn-cancelar').on('click', function (event) {
+            $('#ttb-panel-id, #ttb-panel-name').val('');
+        });
+    });
+
+</script>

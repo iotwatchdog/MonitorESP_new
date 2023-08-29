@@ -1,0 +1,38 @@
+{
+    "header": [
+        {
+            "name": "id",
+            "title": "Id",
+            "sortable": true
+        },
+        {
+            "name": "name",
+            "title": "Nome",
+            "sortable": true
+        },
+        {
+            "name": "name",
+            "title": "Modelo",
+            "sortable": true
+        },
+        {
+            "name": "name",
+            "title": "Part Number",
+            "sortable": true
+        }
+    ],
+    "data": [
+        [
+            "1",
+            "Termistor",
+            "Model. XXXX",
+            "99999999999"
+        ],
+        [
+            "2",
+            "ESP8266",
+            "Model. XXXX",
+            "99999999999"
+        ]
+    ]
+}

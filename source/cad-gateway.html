@@ -1,0 +1,190 @@
+<div class="container mt-3">
+    <div data-role="panel" data-title-caption="Gateway" data-collapsible="true"
+        data-title-icon="<span class='mif-table'></span>">
+        <div class="row">
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Empresa</label>
+                <select id="ddl-company" data-role="select">
+
+                </select>
+            </div>
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Filial</label>
+                <select id="ddl-branch" data-role="select">
+
+                </select>
+            </div>
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Departamento</label>
+                <select id="ddl-department" data-role="select">
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <label>Painel</label>
+                <select id="ddl-panel" data-role="select">
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Id</label>
+                <input id="ttb-config-id" type="text" data-role="input" disabled>
+            </div>
+            <div class="cell-lg-10 cell-sm-10">
+                <label>Nome</label>
+                <input id="ttb-config-name" type="text" data-role="input">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Sender</label>
+                <select id="ddl-sender" data-role="select">
+                    <option value="1">ESP #001</option>
+                </select>
+            </div>
+            <div class="cell-lg-4 cell-sm-4">
+                <label>Dispositivo</label>
+                <select id="ddl-sensor" data-role="select">
+                </select>
+            </div>
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Valor Mínimo</label>
+                <input id="ttb-config-min" type="text" data-role="spinner" >
+            </div>
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Valor Máximo</label>
+                <input id="ttb-config-max" type="text" data-role="spinner">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <button class="button primary" id="btn-salvar">Salvar</button>
+                <button class="button alert" id="btn-excluir">Excluir</button>
+                <button class="button secondary" id="btn-novo">Novo</button>
+                <button class="button" id="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <table id="table-config" class="table compact striped table-border" data-role="table"
+                    data-cls-component="mt-2" data-rows="10" data-show-search="true" data-pagination="true"
+                    data-show-all-pages="false" data-check="true" data-check-type="1"
+                    data-on-check-click="handleCheckboxClick">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function handleCheckboxClick(e) {
+        const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
+        const rowData = {
+            id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
+            name: row.cells[3].textContent,  // Obtém o conteúdo da terceira célula
+            model: row.cells[4].textContent,
+            partnumber: row.cells[5].textContent
+        };
+        $('#ttb-config-id').val(rowData.id)
+        $('#ttb-config-name').val(rowData.name)
+        $('#ddl-sensor').val(rowData.model)
+        $('#ttb-sensor-partnumber').val(rowData.partnumber)
+        $('#ttb-sensor-partnumber').val(rowData.partnumber)
+    }
+
+    $(document).ready(function () {
+        getSensorList();
+        getCompanyList();
+        $('#ddl-company').on('change', function () {
+            getBranchList($(this).val())
+            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            $('#table-config').data('table').loadData(`${urlserver}/get-table-parameter?panelid=0`, true);
+        });
+        $('#ddl-branch').on('change', function () {
+            getDepartmentList($(this).val())
+            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+        });
+        $('#ddl-department').on('change', function () {
+            getPanelList($(this).val())
+            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+        });
+        $('#ddl-panel').on('change', function () {
+            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            var selectedId = $(this).val();
+            $('#table-config').data('table').loadData(`${urlserver}/get-table-parameter?panelid=${selectedId}`, true);
+        });
+
+        $('#btn-salvar').on('click', function (event) {
+            var id = $('#ttb-config-id').val();
+            var idpanel = $('#ddl-panel').val();
+            var idsensor = $('#ddl-sensor').val();
+            var name = $('#ttb-config-name').val();
+            var minvalue = $('#ttb-config-min').val();
+            var maxvalue = $('#ttb-config-max').val();
+            var postData = {
+                id: id,
+                idpanel: idpanel,
+                idsensor: idsensor,
+                name: name,
+                minvalue: minvalue,
+                maxvalue: maxvalue,
+                isdeleted: 0
+            };
+            console.log(postData)
+            $.ajax({
+                url: 'http://localhost:3000/post-parameter', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    if ($('#ttb-config-id').val() === '') {
+                        $('#ttb-config-id').val(response.id);
+                    }
+                    $('#table-config').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-excluir').on('click', function (event) {
+            var id = $('#ttb-config-id').val();
+            var idpanel = $('#ddl-panel').val();
+            var idsensor = $('#ddl-sensor').val();
+            var name = $('#ttb-config-name').val();
+            var minvalue = $('#ttb-config-min').val();
+            var maxvalue = $('#ttb-config-max').val();
+            var postData = {
+                id: id,
+                idpanel: idpanel,
+                idsensor: idsensor,
+                name: name,
+                minvalue: minvalue,
+                maxvalue: maxvalue,
+                isdeleted: 1
+            };
+
+            $.ajax({
+                url: 'http://localhost:3000/post-parameter', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    $('#btn-novo').trigger('click');
+                    $('#table-config').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-novo, #btn-cancelar').on('click', function (event) {
+            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+        });
+    });
+</script>

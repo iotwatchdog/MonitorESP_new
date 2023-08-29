@@ -1,0 +1,108 @@
+<style>
+    .row .icon-box>.icon,
+    .row .icon-box {
+        height: 70px !important;
+    }
+
+    .row .icon-box>.icon {
+        width: 70px !important;
+    }
+
+    .row .icon-box>.content {
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container mt-3">
+    <div data-role="panel" data-title-caption="Chocadeira #001" data-collapsible="true"
+        data-custom-buttons="customButtons" data-title-icon="<span class='mif-meter'></span>">
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <div class="icon-box border bd-default">
+                    <div class="icon bg-red fg-white"><span class="mif-thermometer2  ani-shuttle"></span></div>
+                    <div class="content p-1" style="font-size: 12px;">
+                        <div class="text-upper text-bold text-lead">termometro #001</div>
+                        <div class="text-upper">temperatura: <span class="text-bold"> 2 °C</span></div>
+                        <div class="text-upper">última atualização: <span class="text-bold"> 08/25/2023
+                                03:07:44</span></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="cell-lg-12 cell-sm-12 d-flex flex-justify-center" style="max-height: 40vh;">
+                <canvas id="myChart_temp"></canvas>
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="cell-lg-12 cell-sm-12">
+                <table class="table compact striped table-border" data-role="table" data-cls-component="mt-10"
+                    data-rows="10" data-source="./data/data.json" data-show-search="false" data-pagination="true"
+                    data-show-all-pages="false"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        var customButtons = [
+        {
+            html: "<span class='mif-chart-dots'></span>",
+            cls: "sys-button",
+            onclick: "alert('You press rocket button')"
+        },
+        {
+            html: "<span class='mif-table'></span>",
+            cls: "sys-button",
+            onclick: "alert('You press rocket button')"
+        }
+    ];
+    const ctx = document.getElementById('myChart_temp');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                '01:51:00', '01:51:10', '01:51:20', '01:51:30', '01:51:40', '01:51:50', 
+                '01:52:00', '01:52:10', '01:52:20', '01:52:30', '01:52:40', '01:52:50',
+                '01:53:00', '01:53:10', '01:53:20', '01:53:30', '01:53:40', '01:53:50',
+                '01:54:00', '01:54:10', '01:54:20', '01:54:30', '01:54:40', '01:54:50'
+
+            ],
+            datasets: [{
+                label: 'Temperatura',
+                data: [
+                    4, 5, 5, 5, 5, 5, 
+                    5, 0, 5, 7, 5, 5, 
+                    5, 7, 5, 5, 5, 7, 
+                    5, 5, 0, 3, 1, 3
+                ],
+                borderWidth: 2
+            }],
+        },
+        options: {
+            scales: {
+                y: {
+                    stacked: true,
+                    grid: {
+                        display: true,
+                    }
+                },
+                x: {
+                    grid: {
+                        display: true
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            },
+            barPercentage: 0.8,
+            categoryPercentage: 0.9
+        }
+    });
+</script>

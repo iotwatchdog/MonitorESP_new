@@ -1,0 +1,24 @@
+{
+    "header": [
+        {
+            "name": "id",
+            "title": "Id",
+            "sortable": true
+        },
+        {
+            "name": "name",
+            "title": "Nome",
+            "sortable": true
+        }
+    ],
+    "data": [
+        [
+            "1",
+            "Termometro"
+        ],
+        [
+            "2",
+            "ESP"
+        ]
+    ]
+}

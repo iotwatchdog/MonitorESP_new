@@ -1,0 +1,24 @@
+{
+    "header": [
+        {
+            "name": "id",
+            "title": "Id",
+            "sortable": true
+        },
+        {
+            "name": "name",
+            "title": "Nome",
+            "sortable": true
+        }
+    ],
+    "data": [
+        [
+            "1",
+            "Empresa #001"
+        ],
+        [
+            "2",
+            "Empresa #002"
+        ]
+    ]
+}

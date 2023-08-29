@@ -1,0 +1,123 @@
+<div class="container mt-3">
+    <div data-role="panel" data-title-caption="Filial" data-collapsible="true"
+        data-title-icon="<span class='mif-table'></span>">
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <label>Empresa</label>
+                <select data-role="select" id="ddl-company">
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Id</label>
+                <input type="text" data-role="input" id="ttb-branch-id" disabled>
+            </div>
+            <div class="cell-lg-10 cell-sm-10">
+                <label>Nome</label>
+                <input type="text" data-role="input" id="ttb-branch-name">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <button class="button primary" id="btn-salvar">Salvar</button>
+                <button class="button alert" id="btn-excluir">Excluir</button>
+                <button class="button secondary" id="btn-novo">Novo</button>
+                <button class="button" id="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <table id="table-branch" class="table compact striped table-border" data-role="table"
+                    data-cls-component="mt-2" data-rows="10" data-show-search="true" data-pagination="true"
+                    data-show-all-pages="false" data-check="true" data-check-type="1"
+                    data-on-check-click="handleCheckboxClick">
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        function handleCheckboxClick(e) {
+            const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
+            const rowData = {
+                id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
+                name: row.cells[3].textContent  // Obtém o conteúdo da terceira célula
+            };
+            $('#ttb-branch-id').val(rowData.id)
+            $('#ttb-branch-name').val(rowData.name)
+        }
+
+
+        $(document).ready(function () {
+            getCompanyList();
+            $('#ddl-company').on('change', function () {
+                $('#ttb-branch-id, #ttb-branch-name').val('');
+                var selectedCompanyId = $(this).val();
+                $('#table-branch').data('table').loadData(`${urlserver}/get-table-branch?idcompany=${selectedCompanyId}`, true);
+            });
+
+            $('#btn-salvar').on('click', function (event) {
+                var id = $('#ttb-branch-id').val();
+                var idcompany = $('#ddl-company').val();
+                var name = $('#ttb-branch-name').val();
+                var postData = {
+                    id: id,
+                    idcompany: idcompany,
+                    name: name,
+                    isdeleted: 0
+                };
+                console.log(postData)
+                $.ajax({
+                    url: urlserver + '/post-branch', // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if ($('#ttb-branch-id').val() === '') {
+                            $('#ttb-branch-id').val(response.id);
+                        }
+                        $('#table-branch').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
+                    }
+                });
+            });
+
+            $('#btn-excluir').on('click', function (event) {
+                var id = $('#ttb-branch-id').val();
+                var idcompany = $('#ddl-company').val();
+                var name = $('#ttb-branch-name').val();
+                var postData = {
+                    id: id,
+                    idcompany: idcompany,
+                    name: name,
+                    isdeleted: 1
+                };
+                console.log(postData)
+                $.ajax({
+                    url: urlserver + '/post-branch', // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        $('#ttb-branch-id, #ttb-branch-name').val('');
+                        $('#table-branch').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
+                    }
+                });
+            });
+
+            $('#btn-novo, #btn-cancelar').on('click', function (event) {
+                $('#ttb-branch-id, #ttb-branch-name').val('');
+            });
+
+        });
+
+
+    </script>
+</div>

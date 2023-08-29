@@ -1,0 +1,147 @@
+<div class="container mt-3">
+    <div data-role="panel" data-title-caption="Dispositivo" data-collapsible="true"
+        data-title-icon="<span class='mif-table'></span>">
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <label>Tipo de Dispositivo</label>
+                <select id="ddl-sensortype" data-role="select">
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-2 cell-sm-2">
+                <label>Id</label>
+                <input id="ttb-sensor-id" type="text" data-role="input" disabled>
+            </div>
+            <div class="cell-lg-10 cell-sm-10">
+                <label>Nome</label>
+                <input id="ttb-sensor-name" type="text" data-role="input">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-6 cell-sm-6">
+                <label>Modelo</label>
+                <input id="ttb-sensor-model" type="text" data-role="input">
+            </div>
+            <div class="cell-lg-6 cell-sm-6">
+                <label>Part Number</label>
+                <input id="ttb-sensor-partnumber" type="text" data-role="input">
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <button class="button primary" id="btn-salvar">Salvar</button>
+                <button class="button alert" id="btn-excluir">Excluir</button>
+                <button class="button secondary" id="btn-novo">Novo</button>
+                <button class="button" id="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="cell-lg-12 cell-sm-12">
+                <table id="table-sensor" class="table compact striped table-border" data-role="table"
+                    data-cls-component="mt-2" data-rows="10" data-show-search="true" data-pagination="true"
+                    data-show-all-pages="false" data-check="true" data-check-type="1"
+                    data-on-check-click="handleCheckboxClick">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function handleCheckboxClick(e) {
+        const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
+        const rowData = {
+            id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
+            name: row.cells[3].textContent,  // Obtém o conteúdo da terceira célula
+            model: row.cells[4].textContent,
+            partnumber: row.cells[5].textContent
+        };
+        $('#ttb-sensor-id').val(rowData.id)
+        $('#ttb-sensor-name').val(rowData.name)
+        $('#ttb-sensor-model').val(rowData.model)
+        $('#ttb-sensor-partnumber').val(rowData.partnumber)
+    }
+
+
+    $(document).ready(function () {
+        $('#ddl-sensortype').on('change', function () {
+            $('#btn-novo').trigger('click');
+            var selectedSensorTypeId = $(this).val();
+            $('#table-sensor').data('table').loadData(`http://localhost:3000/get-table-sensor?sensorTypeId=${selectedSensorTypeId}`, true);
+        });
+
+
+
+        $('#btn-salvar').on('click', function (event) {
+            var id = $('#ttb-sensor-id').val();
+            var idtypesensor = $('#ddl-sensortype').val();
+            var name = $('#ttb-sensor-name').val();
+            var model = $('#ttb-sensor-model').val();
+            var partnumber = $('#ttb-sensor-partnumber').val();
+            var postData = {
+                id: id,
+                idtypesensor: idtypesensor,
+                name: name,
+                model: model,
+                partnumber: partnumber,
+                isdeleted: 0
+            };
+
+            $.ajax({
+                url: 'http://localhost:3000/post-sensor', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    if ($('#ttb-sensor-id').val() === '') {
+                        $('#ttb-sensor-id').val(response.id);
+                    }
+                    $('#table-sensor').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-excluir').on('click', function (event) {
+            var id = $('#ttb-sensor-id').val();
+            var idtypesensor = $('#ddl-sensortype').val();
+            var name = $('#ttb-sensor-name').val();
+            var model = $('#ttb-sensor-model').val();
+            var partnumber = $('#ttb-sensor-partnumber').val();
+            var postData = {
+                id: id,
+                idtypesensor: idtypesensor,
+                name: name,
+                model: model,
+                partnumber: partnumber,
+                isdeleted: 1
+            };
+
+            $.ajax({
+                url: 'http://localhost:3000/post-sensor', // Endpoint correto
+                type: 'POST',
+                data: JSON.stringify(postData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    $('#btn-novo').trigger('click');
+                    $('#table-sensor').data('table').reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao adicionar empresa:', error);
+                }
+            });
+        });
+
+        $('#btn-novo, #btn-cancelar').on('click', function (event) {
+            $('#ttb-sensor-id, #ttb-sensor-name, #ttb-sensor-model, #ttb-sensor-partnumber').val('');
+        });
+        getSensorTypeList();
+    });
+
+
+</script>
