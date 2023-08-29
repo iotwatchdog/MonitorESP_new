@@ -23,7 +23,7 @@
         <div class="row">
             <div class="cell-lg-12 cell-sm-12">
                 <table id="table-company" class="table compact striped table-border" data-role="table"
-                    data-cls-component="mt-2" data-rows="10" data-source="http://localhost:3000/get-table-company"
+                    data-cls-component="mt-2" data-rows="10"
                     data-show-search="true" data-pagination="true" data-show-all-pages="false" data-check="true"
                     data-check-type="1" data-on-check-click="handleCheckboxClick">
                 </table>
@@ -32,7 +32,6 @@
     </div>
 </div>
 <script>
-
     function handleCheckboxClick(e) {
         const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
         const rowData = {
@@ -42,8 +41,9 @@
         $('#ttb-company-id').val(rowData.id)
         $('#ttb-company-name').val(rowData.name)
     }
-
+    
     $(document).ready(function () {
+        $('#table-company').data('table').loadData(`${urlserver}/get-table-company`, true);
         $('#btn-salvar').on('click', function (event) {
             var id = $('#ttb-company-id').val();
             var name = $('#ttb-company-name').val();

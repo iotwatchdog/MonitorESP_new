@@ -23,7 +23,7 @@
         <div class="row">
             <div class="cell-lg-12 cell-sm-12">
                 <table id="table-sensortype" class="table compact striped table-border" data-role="table"
-                    data-cls-component="mt-2" data-rows="10" data-source="http://localhost:3000/get-table-sensortype"
+                    data-cls-component="mt-2" data-rows="10"
                     data-show-search="true" data-pagination="true" data-show-all-pages="false" data-check="true"
                     data-check-type="1" data-on-check-click="handleCheckboxClick">
                 </table>
@@ -44,6 +44,7 @@
     }
 
     $(document).ready(function () {
+        $('#table-sensortype').data('table').loadData(`${urlserver}/get-table-sensortype`, true);
         $('#btn-salvar').on('click', function (event) {
             var id = $('#ttb-sensortype-id').val();
             var name = $('#ttb-sensortype-name').val();
