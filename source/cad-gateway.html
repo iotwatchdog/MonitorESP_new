@@ -133,7 +133,7 @@
             };
             console.log(postData)
             $.ajax({
-                url: 'http://localhost:3000/post-parameter', // Endpoint correto
+                url: `${urlserver}/post-parameter`, // Endpoint correto
                 type: 'POST',
                 data: JSON.stringify(postData),
                 contentType: 'application/json',
@@ -168,7 +168,7 @@
             };
 
             $.ajax({
-                url: 'http://localhost:3000/post-parameter', // Endpoint correto
+                url: `${urlserver}/post-parameter`, // Endpoint correto
                 type: 'POST',
                 data: JSON.stringify(postData),
                 contentType: 'application/json',
