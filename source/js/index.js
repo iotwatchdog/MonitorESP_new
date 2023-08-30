@@ -1,4 +1,4 @@
-const urlserver = 'http://localhost:3000' //'https://iotlsmonitor.onrender.com'  // //https://iotserver-zthy.onrender.com
+const urlserver = 'https://iotlsmonitor.onrender.com' //'https://iotlsmonitor.onrender.com'  // //https://iotserver-zthy.onrender.com
 
 var payments = {
     1: 'Credit Card',
