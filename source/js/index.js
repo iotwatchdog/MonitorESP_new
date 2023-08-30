@@ -1,4 +1,4 @@
-const urlserver = 'https://iotlsmonitor.onrender.com'  //'http://localhost:3000' //https://iotserver-zthy.onrender.com
+const urlserver = 'http://localhost:3000' //'https://iotlsmonitor.onrender.com'  // //https://iotserver-zthy.onrender.com
 
 var payments = {
     1: 'Credit Card',
@@ -157,6 +157,7 @@ function getDepartmentList(pIdBranch) {
         type: 'GET',
         dataType: 'json',
         success: function (response) {
+            
             const data = response.reduce((result, item) => {
                 result[item.id] = item.id + ' - ' + item.name;
                 return result;
@@ -177,11 +178,12 @@ function getPanelList(pIdDepartment) {
         type: 'GET',
         dataType: 'json',
         success: function (response) {
+            var select = Metro.getPlugin("#ddl-panel", 'select');
+            select.reset();
             const data = response.reduce((result, item) => {
                 result[item.id] = item.id + ' - ' + item.name;
                 return result;
             }, {});
-            var select = Metro.getPlugin("#ddl-panel", 'select');
             select.data(data);
             $(select).trigger('change');
         },
@@ -215,7 +217,7 @@ function getSensorList() {
 
 function getSenderList() {
     $.ajax({
-        url: urlserver + '/get-sensor',
+        url: urlserver + '/get-sender',
         type: 'GET',
         dataType: 'json',
         success: function (response) {

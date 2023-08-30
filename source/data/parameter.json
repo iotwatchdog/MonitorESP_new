@@ -1,0 +1,10 @@
+{
+    "header": [
+        { "name": "id", "title": "Id", "sortable": true, "size": 100 },
+        { "name": "name", "title": "Nome", "sortable": true },
+        { "name": "device", "title": "Dispositivo", "sortable": true },
+        { "name": "minvalue", "title": "Valor Mínimo", "sortable": true },
+        { "name": "maxvalue", "title": "Valor Máximo", "sortable": true }
+    ],
+    "data": []
+}

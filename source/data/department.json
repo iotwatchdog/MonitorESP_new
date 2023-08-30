@@ -3,7 +3,8 @@
         {
             "name": "id",
             "title": "Id",
-            "sortable": true
+            "sortable": true,
+            "size": 100
         },
         {
             "name": "name",
@@ -11,14 +12,5 @@
             "sortable": true
         }
     ],
-    "data": [
-        [
-            "1",
-            "Departamento #001"
-        ],
-        [
-            "2",
-            "Departamento #002"
-        ]
-    ]
+    "data": []
 }

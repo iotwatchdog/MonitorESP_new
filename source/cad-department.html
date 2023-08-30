@@ -60,6 +60,7 @@
         $('#ddl-company').on('change', function () {
             getBranchList($(this).val())
             $('#ttb-branch-id, #ttb-branch-name').val('');
+            $('#table-department').data('table').loadData('./data/department.json');
         });
 
         $('#ddl-branch').on('change', function () {

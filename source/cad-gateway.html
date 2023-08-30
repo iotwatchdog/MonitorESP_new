@@ -1,5 +1,5 @@
 <div class="container mt-3">
-    <div data-role="panel" data-title-caption="Gateway" data-collapsible="true"
+    <div data-role="panel" data-title-caption="Configuração do Painel" data-collapsible="true"
         data-title-icon="<span class='mif-table'></span>">
         <div class="row">
             <div class="cell-lg-4 cell-sm-4">
@@ -57,12 +57,12 @@
             <div class="cell-lg-2 cell-sm-2">
                 <label>Valor Máximo</label>
                 <input id="ttb-config-max" type="text" data-role="spinner" name="Valor Máximo"
-                    data-validate="required maxlength=255">
+                    data-validate="required maxlength=255" data-default-value="0">
             </div>
         </div>
         <div class="row">
             <div class="cell-lg-12 cell-sm-12">
-                <button class="button primary" id="btn-salvar">Salvar</button>
+                <button class="button primary" id="btn-salvar" disabled>Salvar</button>
                 <button class="button alert" id="btn-excluir">Excluir</button>
                 <button class="button secondary" id="btn-novo">Novo</button>
                 <button class="button" id="btn-cancelar">Cancelar</button>
@@ -90,32 +90,43 @@
         };
         $('#ttb-config-id').val(rowData.id)
         $('#ttb-config-name').val(rowData.name)
-        $('#ddl-sensor').val(rowData.model)
-        $('#ttb-sensor-partnumber').val(rowData.partnumber)
-        $('#ttb-sensor-partnumber').val(rowData.partnumber)
+        // $('#ddl-sensor').val(rowData.model)
+        // $('#ttb-sensor-partnumber').val(rowData.partnumber)
+        // $('#ttb-sensor-partnumber').val(rowData.partnumber)
     }
 
     $(document).ready(function () {
         getSensorList();
         getCompanyList();
+        getSenderList();
         $('#ddl-company').on('change', function () {
+            $('#btn-salvar').attr('disabled', 'disabled');
             getBranchList($(this).val())
-            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
-            $('#table-config').data('table').loadData(`${urlserver}/get-table-parameter?panelid=0`, true);
+            $('#ttb-config-id, #ttb-config-name').val('');
+            $('#ttb-config-min, #ttb-config-max').val('0');
+            $('#table-config').data('table').loadData('./data/parameter.json', true);
+            Metro.getPlugin("#ddl-panel", 'select').data([]);
         });
         $('#ddl-branch').on('change', function () {
             getDepartmentList($(this).val())
-            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            $('#ttb-config-id, #ttb-config-name').val('');
+            $('#ttb-config-min, #ttb-config-max').val('0');
+            $('#table-config').data('table').loadData('./data/parameter.json', true);
+            Metro.getPlugin("#ddl-panel", 'select').data([]);
         });
         $('#ddl-department').on('change', function () {
             getPanelList($(this).val())
             $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            $('#table-config').data('table').loadData('./data/parameter.json', true);
         });
         $('#ddl-panel').on('change', function () {
-            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            $('#ttb-config-id, #ttb-config-name').val('');
+            $('#ttb-config-min, #ttb-config-max').val('0');
             var selectedId = $(this).val();
+            $('#btn-salvar').removeAttr('disabled');
             $('#table-config').data('table').loadData(`${urlserver}/get-table-parameter?panelid=${selectedId}`, true);
         });
+
 
         $('#btn-salvar').on('click', function (event) {
             var result = {
@@ -128,6 +139,7 @@
                 var id = $('#ttb-config-id').val();
                 var idpanel = $('#ddl-panel').val();
                 var idsensor = $('#ddl-sensor').val();
+                var idsender = $('#ddl-sender').val();
                 var name = $('#ttb-config-name').val();
                 var minvalue = $('#ttb-config-min').val();
                 var maxvalue = $('#ttb-config-max').val();
@@ -135,6 +147,7 @@
                     id: id,
                     idpanel: idpanel,
                     idsensor: idsensor,
+                    idsender: idsender,
                     name: name,
                     minvalue: minvalue,
                     maxvalue: maxvalue,
@@ -166,6 +179,7 @@
             var id = $('#ttb-config-id').val();
             var idpanel = $('#ddl-panel').val();
             var idsensor = $('#ddl-sensor').val();
+            var idsender = $('#ddl-sender').val();
             var name = $('#ttb-config-name').val();
             var minvalue = $('#ttb-config-min').val();
             var maxvalue = $('#ttb-config-max').val();
@@ -173,9 +187,10 @@
                 id: id,
                 idpanel: idpanel,
                 idsensor: idsensor,
+                idsender: idsender,
                 name: name,
-                minvalue: minvalue,
-                maxvalue: maxvalue,
+                minvalue: 0,
+                maxvalue: 0,
                 isdeleted: 1
             };
 
@@ -196,7 +211,8 @@
         });
 
         $('#btn-novo, #btn-cancelar').on('click', function (event) {
-            $('#ttb-config-id, #ttb-config-name, #ttb-config-min, #ttb-config-max').val('');
+            $('#ttb-config-id, #ttb-config-name').val('');
+            $('#ttb-config-min, #ttb-config-max').val('0');
         });
     });
 </script>

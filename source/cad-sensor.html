@@ -20,13 +20,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="cell-lg-6 cell-sm-6">
+            <div class="cell-lg-5 cell-sm-5">
                 <label>Modelo</label>
                 <input id="ttb-sensor-model" type="text" data-role="input">
             </div>
-            <div class="cell-lg-6 cell-sm-6">
+            <div class="cell-lg-5 cell-sm-5">
                 <label>Part Number</label>
                 <input id="ttb-sensor-partnumber" type="text" data-role="input">
+            </div>
+            <div class="cell-lg-2 cell-sm-2">
+                <br>
+                <input id="ckb-sensor-issender" type="checkbox" data-role="checkbox" data-caption="Sender">
             </div>
         </div>
         <div class="row">
@@ -56,12 +60,15 @@
             id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
             name: row.cells[3].textContent,  // Obtém o conteúdo da terceira célula
             model: row.cells[4].textContent,
-            partnumber: row.cells[5].textContent
+            partnumber: row.cells[5].textContent,
+            issender: row.cells[6].textContent
         };
         $('#ttb-sensor-id').val(rowData.id)
         $('#ttb-sensor-name').val(rowData.name)
         $('#ttb-sensor-model').val(rowData.model)
         $('#ttb-sensor-partnumber').val(rowData.partnumber)
+        $('#ckb-sensor-issender').prop('checked', rowData.issender == 'Sim')
+
     }
 
 
@@ -89,15 +96,18 @@
                 var name = $('#ttb-sensor-name').val();
                 var model = $('#ttb-sensor-model').val();
                 var partnumber = $('#ttb-sensor-partnumber').val();
+                var issender = $('#ckb-sensor-issender').is(":checked") ? 1 : 0;
                 var postData = {
                     id: id,
                     idtypesensor: idtypesensor,
                     name: name,
                     model: model,
                     partnumber: partnumber,
+                    issender: issender,
                     isdeleted: 0
                 };
 
+                console.log(postData)
                 $.ajax({
                     url: `${urlserver}/post-sensor`, // Endpoint correto
                     type: 'POST',

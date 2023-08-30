@@ -46,7 +46,6 @@
     }
 
     $(document).ready(function () {
-
         $('#table-company').data('table').loadData(`${urlserver}/get-table-company`, true);
         $('#btn-salvar').on('click', function (event) {
             var result = {
