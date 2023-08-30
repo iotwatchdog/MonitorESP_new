@@ -27,7 +27,8 @@
             </div>
             <div class="cell-lg-10 cell-sm-10">
                 <label>Nome</label>
-                <input id="ttb-panel-name" type="text" data-role="input">
+                <input id="ttb-panel-name" type="text" data-role="input" name="Nome"
+                    data-validate="required maxlength=255">
             </div>
         </div>
 
@@ -78,31 +79,41 @@
         });
 
         $('#btn-salvar').on('click', function (event) {
-            var id = $('#ttb-panel-id').val();
-            var iddepartment = $('#ddl-department').val();
-            var name = $('#ttb-panel-name').val();
-            var postData = {
-                id: id,
-                iddepartment: iddepartment,
-                name: name,
-                isdeleted: 0
-            };
-            console.log(postData)
-            $.ajax({
-                url: urlserver + '/post-panel', // Endpoint correto
-                type: 'POST',
-                data: JSON.stringify(postData),
-                contentType: 'application/json',
-                success: function (response) {
-                    if ($('#ttb-panel-id').val() === '') {
-                        $('#ttb-panel-id').val(response.id);
+            var result = {
+                val: 0,
+                log: []
+            }
+            var isValid = Metro.validator.validate($('#ttb-panel-name'), result)
+
+            if (isValid) {
+                var id = $('#ttb-panel-id').val();
+                var iddepartment = $('#ddl-department').val();
+                var name = $('#ttb-panel-name').val();
+                var postData = {
+                    id: id,
+                    iddepartment: iddepartment,
+                    name: name,
+                    isdeleted: 0
+                };
+                console.log(postData)
+                $.ajax({
+                    url: urlserver + '/post-panel', // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if ($('#ttb-panel-id').val() === '') {
+                            $('#ttb-panel-id').val(response.id);
+                        }
+                        $('#table-panel').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
                     }
-                    $('#table-panel').data('table').reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erro ao adicionar empresa:', error);
-                }
-            });
+                });
+            } else {
+                openDemoDialogActions();
+            }
         });
 
         $('#btn-excluir').on('click', function (event) {

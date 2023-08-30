@@ -8,7 +8,8 @@
             </div>
             <div class="cell-lg-10 cell-sm-10">
                 <label>Nome</label>
-                <input type="text" data-role="input" id="ttb-company-name">
+                <input type="text" data-role="input" id="ttb-company-name" name="Nome"
+                    data-validate="required maxlength=255">
             </div>
         </div>
 
@@ -23,15 +24,17 @@
         <div class="row">
             <div class="cell-lg-12 cell-sm-12">
                 <table id="table-company" class="table compact striped table-border" data-role="table"
-                    data-cls-component="mt-2" data-rows="10"
-                    data-show-search="true" data-pagination="true" data-show-all-pages="false" data-check="true"
-                    data-check-type="1" data-on-check-click="handleCheckboxClick">
+                    data-cls-component="mt-2" data-rows="10" data-show-search="true" data-pagination="true"
+                    data-show-all-pages="false" data-check="true" data-check-type="1"
+                    data-on-check-click="handleCheckboxClick">
                 </table>
             </div>
         </div>
     </div>
 </div>
 <script>
+
+
     function handleCheckboxClick(e) {
         const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
         const rowData = {
@@ -41,34 +44,45 @@
         $('#ttb-company-id').val(rowData.id)
         $('#ttb-company-name').val(rowData.name)
     }
-    
+
     $(document).ready(function () {
+
         $('#table-company').data('table').loadData(`${urlserver}/get-table-company`, true);
         $('#btn-salvar').on('click', function (event) {
-            var id = $('#ttb-company-id').val();
-            var name = $('#ttb-company-name').val();
-            var postData = {
-                id: id,
-                name: name,
-                isdeleted: 0
-            };
+            var result = {
+                val: 0,
+                log: []
+            }
+            var isValid = Metro.validator.validate($('#ttb-company-name'), result)
+          
+            if (isValid) {
+                var id = $('#ttb-company-id').val();
+                var name = $('#ttb-company-name').val();
+                var postData = {
+                    id: id,
+                    name: name,
+                    isdeleted: 0
+                };
 
-            $.ajax({
-                url: urlserver + '/post-company', // Endpoint correto
-                type: 'POST',
-                data: JSON.stringify(postData),
-                contentType: 'application/json',
-                success: function (response) {
-                    console.log(response)
-                    if ($('#ttb-company-id').val() === '') {
-                        $('#ttb-company-id').val(response.id);
+                $.ajax({
+                    url: urlserver + '/post-company', // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log(response)
+                        if ($('#ttb-company-id').val() === '') {
+                            $('#ttb-company-id').val(response.id);
+                        }
+                        $('#table-company').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
                     }
-                    $('#table-company').data('table').reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erro ao adicionar empresa:', error);
-                }
-            });
+                });
+            } else {
+                openDemoDialogActions();
+            }
         });
 
         $('#btn-excluir').on('click', function (event) {

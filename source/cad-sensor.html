@@ -15,7 +15,8 @@
             </div>
             <div class="cell-lg-10 cell-sm-10">
                 <label>Nome</label>
-                <input id="ttb-sensor-name" type="text" data-role="input">
+                <input id="ttb-sensor-name" type="text" data-role="input" name="Nome"
+                    data-validate="required maxlength=255">
             </div>
         </div>
         <div class="row">
@@ -68,42 +69,54 @@
         $('#ddl-sensortype').on('change', function () {
             $('#btn-novo').trigger('click');
             var selectedSensorTypeId = $(this).val();
-            $('#table-sensor').data('table').loadData(`http://localhost:3000/get-table-sensor?sensorTypeId=${selectedSensorTypeId}`, true);
+            if (selectedSensorTypeId) {
+                $('#table-sensor').data('table').loadData(`${urlserver}/get-table-sensor?sensorTypeId=${selectedSensorTypeId}`, true);
+            }
         });
 
 
 
         $('#btn-salvar').on('click', function (event) {
-            var id = $('#ttb-sensor-id').val();
-            var idtypesensor = $('#ddl-sensortype').val();
-            var name = $('#ttb-sensor-name').val();
-            var model = $('#ttb-sensor-model').val();
-            var partnumber = $('#ttb-sensor-partnumber').val();
-            var postData = {
-                id: id,
-                idtypesensor: idtypesensor,
-                name: name,
-                model: model,
-                partnumber: partnumber,
-                isdeleted: 0
-            };
+            var result = {
+                val: 0,
+                log: []
+            }
+            var isValid = Metro.validator.validate($('#ttb-sensor-name'), result)
 
-            $.ajax({
-                url: `${urlserver}/post-sensor`, // Endpoint correto
-                type: 'POST',
-                data: JSON.stringify(postData),
-                contentType: 'application/json',
-                success: function (response) {
-                    console.log(response)
-                    if ($('#ttb-sensor-id').val() === '') {
-                        $('#ttb-sensor-id').val(response.id);
+            if (isValid) {
+                var id = $('#ttb-sensor-id').val();
+                var idtypesensor = $('#ddl-sensortype').val();
+                var name = $('#ttb-sensor-name').val();
+                var model = $('#ttb-sensor-model').val();
+                var partnumber = $('#ttb-sensor-partnumber').val();
+                var postData = {
+                    id: id,
+                    idtypesensor: idtypesensor,
+                    name: name,
+                    model: model,
+                    partnumber: partnumber,
+                    isdeleted: 0
+                };
+
+                $.ajax({
+                    url: `${urlserver}/post-sensor`, // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log(response)
+                        if ($('#ttb-sensor-id').val() === '') {
+                            $('#ttb-sensor-id').val(response.id);
+                        }
+                        $('#table-sensor').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
                     }
-                    $('#table-sensor').data('table').reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erro ao adicionar empresa:', error);
-                }
-            });
+                });
+            } else {
+                openDemoDialogActions();
+            }
         });
 
         $('#btn-excluir').on('click', function (event) {

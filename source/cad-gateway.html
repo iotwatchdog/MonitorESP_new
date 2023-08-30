@@ -34,14 +34,14 @@
             </div>
             <div class="cell-lg-10 cell-sm-10">
                 <label>Nome</label>
-                <input id="ttb-config-name" type="text" data-role="input">
+                <input id="ttb-config-name" type="text" data-role="input" name="Nome"
+                    data-validate="required maxlength=255">
             </div>
         </div>
         <div class="row">
             <div class="cell-lg-4 cell-sm-4">
                 <label>Sender</label>
                 <select id="ddl-sender" data-role="select">
-                    <option value="1">ESP #001</option>
                 </select>
             </div>
             <div class="cell-lg-4 cell-sm-4">
@@ -51,11 +51,13 @@
             </div>
             <div class="cell-lg-2 cell-sm-2">
                 <label>Valor Mínimo</label>
-                <input id="ttb-config-min" type="text" data-role="spinner" >
+                <input id="ttb-config-min" type="text" data-role="spinner" name="Valor Mínimo"
+                    data-validate="required maxlength=255">
             </div>
             <div class="cell-lg-2 cell-sm-2">
                 <label>Valor Máximo</label>
-                <input id="ttb-config-max" type="text" data-role="spinner">
+                <input id="ttb-config-max" type="text" data-role="spinner" name="Valor Máximo"
+                    data-validate="required maxlength=255">
             </div>
         </div>
         <div class="row">
@@ -116,38 +118,48 @@
         });
 
         $('#btn-salvar').on('click', function (event) {
-            var id = $('#ttb-config-id').val();
-            var idpanel = $('#ddl-panel').val();
-            var idsensor = $('#ddl-sensor').val();
-            var name = $('#ttb-config-name').val();
-            var minvalue = $('#ttb-config-min').val();
-            var maxvalue = $('#ttb-config-max').val();
-            var postData = {
-                id: id,
-                idpanel: idpanel,
-                idsensor: idsensor,
-                name: name,
-                minvalue: minvalue,
-                maxvalue: maxvalue,
-                isdeleted: 0
-            };
-            console.log(postData)
-            $.ajax({
-                url: `${urlserver}/post-parameter`, // Endpoint correto
-                type: 'POST',
-                data: JSON.stringify(postData),
-                contentType: 'application/json',
-                success: function (response) {
-                    console.log(response)
-                    if ($('#ttb-config-id').val() === '') {
-                        $('#ttb-config-id').val(response.id);
+            var result = {
+                val: 0,
+                log: []
+            }
+            var isValid = Metro.validator.validate($('#ttb-config-name'), result)
+
+            if (isValid) {
+                var id = $('#ttb-config-id').val();
+                var idpanel = $('#ddl-panel').val();
+                var idsensor = $('#ddl-sensor').val();
+                var name = $('#ttb-config-name').val();
+                var minvalue = $('#ttb-config-min').val();
+                var maxvalue = $('#ttb-config-max').val();
+                var postData = {
+                    id: id,
+                    idpanel: idpanel,
+                    idsensor: idsensor,
+                    name: name,
+                    minvalue: minvalue,
+                    maxvalue: maxvalue,
+                    isdeleted: 0
+                };
+                console.log(postData)
+                $.ajax({
+                    url: `${urlserver}/post-parameter`, // Endpoint correto
+                    type: 'POST',
+                    data: JSON.stringify(postData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log(response)
+                        if ($('#ttb-config-id').val() === '') {
+                            $('#ttb-config-id').val(response.id);
+                        }
+                        $('#table-config').data('table').reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erro ao adicionar empresa:', error);
                     }
-                    $('#table-config').data('table').reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erro ao adicionar empresa:', error);
-                }
-            });
+                });
+            } else {
+                openDemoDialogActions();
+            }
         });
 
         $('#btn-excluir').on('click', function (event) {

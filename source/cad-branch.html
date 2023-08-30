@@ -15,7 +15,8 @@
             </div>
             <div class="cell-lg-10 cell-sm-10">
                 <label>Nome</label>
-                <input type="text" data-role="input" id="ttb-branch-name">
+                <input type="text" data-role="input" id="ttb-branch-name" name="Nome"
+                    data-validate="required maxlength=255">
             </div>
         </div>
 
@@ -59,31 +60,41 @@
             });
 
             $('#btn-salvar').on('click', function (event) {
-                var id = $('#ttb-branch-id').val();
-                var idcompany = $('#ddl-company').val();
-                var name = $('#ttb-branch-name').val();
-                var postData = {
-                    id: id,
-                    idcompany: idcompany,
-                    name: name,
-                    isdeleted: 0
-                };
-                console.log(postData)
-                $.ajax({
-                    url: urlserver + '/post-branch', // Endpoint correto
-                    type: 'POST',
-                    data: JSON.stringify(postData),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        if ($('#ttb-branch-id').val() === '') {
-                            $('#ttb-branch-id').val(response.id);
+                var result = {
+                    val: 0,
+                    log: []
+                }
+                var isValid = Metro.validator.validate($('#ttb-branch-name'), result)
+
+                if (isValid) {
+                    var id = $('#ttb-branch-id').val();
+                    var idcompany = $('#ddl-company').val();
+                    var name = $('#ttb-branch-name').val();
+                    var postData = {
+                        id: id,
+                        idcompany: idcompany,
+                        name: name,
+                        isdeleted: 0
+                    };
+                    console.log(postData)
+                    $.ajax({
+                        url: urlserver + '/post-branch', // Endpoint correto
+                        type: 'POST',
+                        data: JSON.stringify(postData),
+                        contentType: 'application/json',
+                        success: function (response) {
+                            if ($('#ttb-branch-id').val() === '') {
+                                $('#ttb-branch-id').val(response.id);
+                            }
+                            $('#table-branch').data('table').reload();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Erro ao adicionar empresa:', error);
                         }
-                        $('#table-branch').data('table').reload();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Erro ao adicionar empresa:', error);
-                    }
-                });
+                    });
+                } else {
+                    openDemoDialogActions();
+                }
             });
 
             $('#btn-excluir').on('click', function (event) {

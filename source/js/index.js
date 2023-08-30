@@ -1,4 +1,4 @@
-const urlserver = 'https://espserver.onrender.com'  //'http://localhost:3000' //https://iotserver-zthy.onrender.com
+const urlserver = 'https://iotlsmonitor.onrender.com'  //'http://localhost:3000' //https://iotserver-zthy.onrender.com
 
 var payments = {
     1: 'Credit Card',
@@ -213,9 +213,29 @@ function getSensorList() {
     });
 }
 
+function getSenderList() {
+    $.ajax({
+        url: urlserver + '/get-sensor',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            const data = response.reduce((result, item) => {
+                result[item.id] = item.id + ' - ' + item.name;
+                return result;
+            }, {});
+            var select = Metro.getPlugin("#ddl-sender", 'select');
+            select.data(data);
+            $(select).trigger('change');
+        },
+        error: function (xhr, status, error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+    });
+}
+
 function getSensorTypeList() {
     $.ajax({
-        url: 'http://localhost:3000/get-sensortype',
+        url: urlserver + '/get-sensortype',
         type: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -232,5 +252,19 @@ function getSensorTypeList() {
         error: function (xhr, status, error) {
             console.error('Erro ao buscar dados:', error);
         }
+    });
+}
+
+function openDemoDialogActions(){
+    Metro.dialog.create({
+        title: "Falia na salvação!",
+        content: "<div>Preencha os campos direito, ASNO.</div>",
+        actions: [
+            {
+                caption: "Agree",
+                cls: "js-dialog-close alert",
+
+            }
+        ]
     });
 }
