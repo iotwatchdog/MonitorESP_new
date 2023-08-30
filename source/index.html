@@ -50,8 +50,8 @@
             </div>
             <img src="images/jek_vorobey.jpg" class="avatar holder ml-2">
         </div> -->
-
-            <!-- <div class="suggest-box">
+            <!-- 
+            <div class="suggest-box">
             <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
             <button class="holder">
                 <span class="mif-search fg-white"></span>
@@ -118,22 +118,23 @@
 
         <div class="navview-content h-100">
             <div data-role="appbar" class="pos-absolute bg-darkCyan fg-white">
-
+                <h2 id="h2-nome-empresa" class="text-light m-0 fg-white pl-2"
+                    style="font-size: 14px; font-weight: bolder !important;">IoT Watchdog</h2>
                 <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
 
                 <div class="app-bar-container ml-auto">
                     <!-- <a href="#" class="app-bar-item">
                         <span class="mif-envelop"></span>
                         <span class="badge bg-green fg-white mt-2 mr-1">4</span>
-                    </a>
+                    </a> -->
                     <a href="#" class="app-bar-item">
                         <span class="mif-bell"></span>
-                        <span class="badge bg-orange fg-white mt-2 mr-1">10</span>
+                        <span class="badge bg-red fg-white mt-2 mr-1">10</span>
                     </a>
-                    <a href="#" class="app-bar-item">
+                    <!-- <a href="#" class="app-bar-item">
                         <span class="mif-flag"></span>
                         <span class="badge bg-red fg-white mt-2 mr-1">9</span>
-                    </a> -->
+                    </a>  -->
                     <div class="app-bar-container">
                         <a href="#" class="app-bar-item">
                             <img src="images/jek_vorobey2.jpg" class="avatar">
@@ -175,6 +176,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="vendors/metro4/js/metro.min.js"></script>
     <script src="js/index.js"></script>
+    <script>
+        getCompanyName()
+            .then(function (companyName) {
+                $('#h2-nome-empresa').text(companyName);
+            })
+            .catch(function (error) {
+                console.error('Erro ao obter o nome da empresa:', error);
+            });
+    </script>
 </body>
 
 </html>

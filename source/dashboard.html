@@ -14,16 +14,16 @@
 </style>
 
 <div class="container mt-3">
-    <div data-role="panel" data-title-caption="Chocadeira #001" data-collapsible="true"
+    <div data-role="panel" data-title-caption="Câmara Fria #001" data-collapsible="true"
         data-custom-buttons="customButtons" data-title-icon="<span class='mif-meter'></span>">
         <div class="row">
             <div class="cell-lg-12 cell-sm-12">
                 <div class="icon-box border bd-default">
-                    <div class="icon bg-red fg-white"><span class="mif-thermometer2  ani-shuttle"></span></div>
+                    <div class="icon" id="span-bg"><span id="span-ico" class="mif-thermometer2"></span></div>
                     <div class="content p-1" style="font-size: 12px;">
                         <div class="text-upper text-bold text-lead">termometro #001</div>
-                        <div class="text-upper">temperatura: <span class="text-bold"> 2 °C</span></div>
-                        <div class="text-upper">última atualização: <span class="text-bold"> 08/25/2023
+                        <div class="text-upper">temperatura: <span class="text-bold" id="span-value"> 2 °C</span></div>
+                        <div class="text-upper">atualizado em: <span class="text-bold" id="span-timestamp"> 08/25/2023
                                 03:07:44</span></div>
 
                     </div>
@@ -35,17 +35,63 @@
                 <canvas id="myChart_temp"></canvas>
             </div>
         </div>
-        <div class="row mt-1">
+        <!-- <div class="row mt-1">
             <div class="cell-lg-12 cell-sm-12">
                 <table class="table compact striped table-border" data-role="table" data-cls-component="mt-10"
                     data-rows="10" data-source="./data/data.json" data-show-search="false" data-pagination="true"
                     data-show-all-pages="false"></table>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <script>
-        var customButtons = [
+
+    let tempoAcumulado = 0;
+    //const ws = new WebSocket('ws://localhost:3000');
+    const ws = new WebSocket('wss://iotlsmonitor.onrender.com/');
+
+    ws.addEventListener('open', () => {
+        console.log('Conectado ao servidor via WebSocket');
+    });
+    var alert = 0;
+    ws.addEventListener('message', (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data)
+        $('#span-value').text(data.value + " °C");
+        $('#span-timestamp').text(data.timestamp);
+        if (data.value > 60) {
+            $('#span-ico').addClass('ani-shuttle')
+            $('#span-bg').addClass('bg-red').addClass('fg-white')
+            if (alert === 0) {
+                openDemoDialogActions('Alerta de Temperatura', 'Este alerta é gerado quando a temperatura ultrapassa 60°C.');
+                alert = 1;
+            }
+        } else {
+            $('#span-ico').removeClass('ani-shuttle')
+            $('#span-bg').removeClass('bg-red').removeClass('fg-white')
+
+        }
+        //let fahrenheit = Number(data.temperatura) * 1.8 + 32;
+        // tempoAcumulado = tempoAcumulado + Number(data.door);
+        // let row = $('<tr></tr>');
+        // $('#td_horario').text(data.timestamp);
+        // $('#td_temp').text(`${data.temp}° C`);
+        // //$('#spm_temperatura').text(`${data.temperatura}° C / ${fahrenheit}° F`);
+        // $('#td_tempoAtual').text(moment.utc(Number(data.door) * 1000).format('HH:mm:ss'));
+        // $('#td_tempoAcumulado').text(moment.utc(Number(tempoAcumulado) * 1000).format('HH:mm:ss'));
+        // $('#btn_accordion').text(`Câmara ${data.equipId} - Log`)
+        // $(row).append(`<td class="text-center">${data.timestamp}</td>`);
+        // //$(row).append(`<td class="text-center">${data.temperatura}° C / ${fahrenheit}° F</td>`);
+        // $(row).append(`<td class="text-center">${data.temp}° C</td>`);
+        // $(row).append(`<td class="text-center">${moment.utc(Number(data.door) * 1000).format('HH:mm:ss')}</td>`);
+        // $('#tbl_log').prepend(row)
+
+    });
+
+    ws.addEventListener('close', () => {
+        console.log('Conexão fechada');
+    });
+    var customButtons = [
         {
             html: "<span class='mif-chart-dots'></span>",
             cls: "sys-button",
@@ -62,7 +108,7 @@
         type: 'line',
         data: {
             labels: [
-                '01:51:00', '01:51:10', '01:51:20', '01:51:30', '01:51:40', '01:51:50', 
+                '01:51:00', '01:51:10', '01:51:20', '01:51:30', '01:51:40', '01:51:50',
                 '01:52:00', '01:52:10', '01:52:20', '01:52:30', '01:52:40', '01:52:50',
                 '01:53:00', '01:53:10', '01:53:20', '01:53:30', '01:53:40', '01:53:50',
                 '01:54:00', '01:54:10', '01:54:20', '01:54:30', '01:54:40', '01:54:50'
@@ -71,9 +117,9 @@
             datasets: [{
                 label: 'Temperatura',
                 data: [
-                    4, 5, 5, 5, 5, 5, 
-                    5, 0, 5, 7, 5, 5, 
-                    5, 7, 5, 5, 5, 7, 
+                    4, 5, 5, 5, 5, 5,
+                    5, 0, 5, 7, 5, 5,
+                    5, 7, 5, 5, 5, 7,
                     5, 5, 0, 3, 1, 3
                 ],
                 borderWidth: 2

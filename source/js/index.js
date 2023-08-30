@@ -1,4 +1,4 @@
-const urlserver = 'https://iotlsmonitor.onrender.com' //'https://iotlsmonitor.onrender.com'  // //https://iotserver-zthy.onrender.com
+const urlserver =  'https://iotlsmonitor.onrender.com'//'http://localhost:3000'  // //https://iotserver-zthy.onrender.com
 
 var payments = {
     1: 'Credit Card',
@@ -131,6 +131,26 @@ function getCompanyList() {
     });
 }
 
+
+function getCompanyName() {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: urlserver + '/get-company',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                resolve(response[0].name);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+// Uso da função
+
+
 function getBranchList(pIdCompany) {
     $.ajax({
         url: urlserver + '/get-branch?idcompany=' + pIdCompany,
@@ -157,7 +177,7 @@ function getDepartmentList(pIdBranch) {
         type: 'GET',
         dataType: 'json',
         success: function (response) {
-            
+
             const data = response.reduce((result, item) => {
                 result[item.id] = item.id + ' - ' + item.name;
                 return result;
@@ -189,7 +209,7 @@ function getPanelList(pIdDepartment) {
         },
         error: function (xhr, status, error) {
             console.error('Erro ao buscar dados:', error);
-        }, complete: function() {
+        }, complete: function () {
             $("#ddl-panel").trigger('change');
         }
     });
@@ -257,15 +277,21 @@ function getSensorTypeList() {
     });
 }
 
-function openDemoDialogActions(){
+
+
+function openDemoDialogActions(pTitle, pContent) {
+    var contentimg = pContent;
+
     Metro.dialog.create({
-        title: "Falia na salvação!",
-        content: "<div>Preencha os campos direito, ASNO.</div>",
+        title: pTitle ? pTitle : "Falha na Inclusão dos Dados!",
+        content: pContent ? contentimg : "<div>Verifique os campos e tente novamente.</div>",
         actions: [
             {
                 caption: "Agree",
                 cls: "js-dialog-close alert",
-
+                onclick: function () {
+                    alert = 0;
+                }
             }
         ]
     });
