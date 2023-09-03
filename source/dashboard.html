@@ -115,8 +115,8 @@
                                             <div class="icon " id="span-bg"><span id="span-ico" class="mif-thermometer2"></span></div>
                                             <div class="content p-1" style="font-size: 12px;">
                                                 <div class="text-upper text-bold text-lead" id="div-sensor-${s.id}">${s.sensor}</div>
-                                                <div class="text-upper">temperatura: <span class="text-bold" id="span-value-${s.id}"> 2 °C</span></div>
-                                                <div class="text-upper">atualizado em: <span class="text-bold" id="span-timestamp-${s.id}"> 08/25/2023 03:07:44</span></div>
+                                                <div class="text-upper">temperatura: <span class="text-bold fg-red" id="span-value-${s.id}"> Offline</span></div>
+                                                <div class="text-upper">atualizado em: <span class="text-bold fg-red" id="span-timestamp-${s.id}"> Offline</span></div>
                                             </div>
                                         </div>
                                     </div>
@@ -179,8 +179,8 @@
             const novaMensagem = data
             //adicionarNovosDados(novaMensagem);
             adicionarDadosAoGrafico(data.deviceId, novaMensagem)
-            $(`#span-value-${data.deviceId}`).text(data.value + " °C");
-            $(`#span-timestamp-${data.deviceId}`).text(data.timestamp);
+            $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
+            $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');;
             if (firstload === 0) {
                 firstload = 1;
                 $(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
