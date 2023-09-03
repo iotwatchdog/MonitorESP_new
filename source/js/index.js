@@ -1,4 +1,20 @@
-const urlserver =  'https://iotlsmonitor.onrender.com'//'http://localhost:3000'  // //https://iotserver-zthy.onrender.com
+const server = {
+    producao: {
+        https: 'https://iotlsmonitor.onrender.com',
+        ws: 'wss://iotlsmonitor.onrender.com'
+    }, 
+    teste: {
+        https: 'http://localhost:3010',
+        ws: 'ws://localhost:3010'
+    }
+}
+
+
+
+const urlserver = server.producao.https;
+
+//const urlserver = 'https://iotlsmonitor.onrender.com'//'http://localhost:3000'  // //https://iotserver-zthy.onrender.com
+//const urlserver = 'http://localhost:3010'  // //https://iotserver-zthy.onrender.com
 
 var payments = {
     1: 'Credit Card',
@@ -292,7 +308,8 @@ function openDemoDialogActions(pTitle, pContent) {
                 onclick: function () {
                     alert = 0;
                 }
-            }
+            },
         ]
     });
+    $(Metro.dialog).addClass("ani-fadeInDown");
 }
