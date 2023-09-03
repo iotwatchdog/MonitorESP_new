@@ -41,7 +41,7 @@
                 success: function (response) {
                     response.forEach(e => {
                         console.log('painel', e)
-                        $('#main-board').append(`<div class="mt-1" data-id="panel-${e.idpainel}" data-role="panel" data-title-caption="${e.idpainel} - ${e.painel}" data-collapsible="true"
+                        $('#main-board').append(`<div class="mt-1" data-id="panel-${e.idpainel}" data-role="panel" data-title-caption="${e.empresa} - ${e.painel}" data-collapsible="true"
                                                     data-cls-title="bg-cyan fg-white" data-cls-panel="shadow-1" data-title-icon="<span class='mif-meter'></span>"></div>`);
                         //data-custom-buttons="panelCustomButtons" 
                         e.sensors.forEach(s => {
@@ -61,25 +61,27 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="cell-lg-6 cell-sm-12">
-                                        <div data-id="panel-chart-${s.id}" data-role="panel" data-title-caption="GRÁFICO" data-collapsible="true"
+                                    <div class="cell-lg-12 cell-sm-12">
+                                        <div data-id="panel-chart-${s.id}" data-role="panel" data-title-caption="GRÁFICO & LOG" data-collapsible="true"
                                             data-collapsed="true" data-title-icon="<span class='mif-chart-dots'></span>">
-                                            <div d-flex flex-justify-center" style="max-height: 40vh;">
-                                                <canvas id="chart-${s.id}"></canvas>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cell-lg-6 cell-sm-12">
-                                         <div data-id="panel-tablemonitor-${s.id}" data-role="panel" data-title-caption="LOG" data-collapsible="true"
-                                            data-collapsed="true" data-title-icon="<span class='mif-table'></span>">
-                                                     <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-cls-component="mt-2" data-rows="50" data-pagination="true" data-show-all-pages="false">
+                                            <div class="row">
+                                                <div class="cell-lg-8 cell-sm-12">
+                                                    <div d-flex flex-justify-center" style="max-height: 40vh;">
+                                                        <canvas id="chart-${s.id}"></canvas>
+                                                    </div>
+                                                </div>
+                                                <div class="cell-lg-4 cell-sm-12">
+                                                    <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-rows="20" 
+                                                    data-pagination="true" data-show-all-pages="false" data-show-search="false" data-show-rows-steps="false">
                                                          <thead>
                                                              <tr>
                                                                  <th data-sortable=true data-format="number">Valor</th>
-                                                                 <th data-sortable=true data-format="date">Data/Hora</th>
+                                                                 <th data-sortable=true data-format="datetime">Data/Hora</th>
                                                              </tr>
                                                          </thead>
                                                     </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>`
