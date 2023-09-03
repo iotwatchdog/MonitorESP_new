@@ -12,9 +12,16 @@
     .row .icon-box>.content {
         line-height: 1.6;
     }
+    .compact td {
+        padding: 3px !important;
+    }
 </style>
 
 <div class="container mt-3" id="main-board">
+
+    <!-- <div class="d-flex flex-justify-center" style="max-height: 40vh;">
+        <canvas id="chart"></canvas>
+    </div> -->
 </div>
 
 <script>
@@ -31,7 +38,63 @@
         }
     ];
     (function () {
+        const graficos = {};
+        function criarGrafico(id) {
+            const canvas = document.createElement('canvas');
+            canvas.id = `chart-${id}`;
+            const pai = document.getElementById(`div-chart-${id}`);
+            pai.appendChild(canvas)
+            canvas.style.width = '100%';
+            canvas.style.maxHeight = '40vh';
+            //document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            const novoGrafico = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperatura',
+                        data: [],
+                        borderWidth: 2
+                    }],
+                },
+                options: {
+                    // ... (suas opções de gráfico existentes)
+                }
+            });
+            graficos[id] = novoGrafico;
+        }
+
+        function adicionarDadosAoGrafico(id, mensagem) {
+            const grafico = graficos[id];
+
+            if (grafico) {
+                const hora = mensagem.timestamp.split(' ')[1];
+                grafico.data.labels.push(hora);
+                grafico.data.datasets[0].data.push(parseFloat(mensagem.value));
+
+                // Verifique se o número de pontos de dados excede o limite máximo.
+                if (grafico.data.labels.length > 25) {
+                    grafico.data.labels.shift();
+                    grafico.data.datasets[0].data.shift();
+                }
+
+                // Atualize o gráfico.
+                grafico.update();
+            } else {
+                // Se o gráfico com o ID especificado não existir, crie-o.
+                criarGrafico(id);
+                adicionarDadosAoGrafico(id, mensagem);
+            }
+        }
         $(document).ready(function () {
+
+
+
+            // Função para criar gráficos vazios com IDs específicos.
+
+
 
 
             $.ajax({
@@ -40,12 +103,10 @@
                 dataType: 'json',
                 success: function (response) {
                     response.forEach(e => {
-                        console.log('painel', e)
                         $('#main-board').append(`<div class="mt-1" data-id="panel-${e.idpainel}" data-role="panel" data-title-caption="${e.empresa} - ${e.painel}" data-collapsible="true"
                                                     data-cls-title="bg-cyan fg-white" data-cls-panel="shadow-1" data-title-icon="<span class='mif-meter'></span>"></div>`);
                         //data-custom-buttons="panelCustomButtons" 
                         e.sensors.forEach(s => {
-                            console.log(s)
                             $(`[data-id="panel-${e.idpainel}`).append(
                                 `<div class="row">
                                     <div class="cell-lg-12 cell-sm-12">
@@ -66,8 +127,8 @@
                                             data-collapsed="true" data-title-icon="<span class='mif-chart-dots'></span>">
                                             <div class="row">
                                                 <div class="cell-lg-8 cell-sm-12">
-                                                    <div d-flex flex-justify-center" style="max-height: 40vh;">
-                                                        <canvas id="chart-${s.id}"></canvas>
+                                                    <div id="div-chart-${s.id}" class="d-flex flex-justify-center">
+                                                        
                                                     </div>
                                                 </div>
                                                 <div class="cell-lg-4 cell-sm-12">
@@ -86,10 +147,11 @@
                                     </div>
                                 </div>`
                             );
+                            criarGrafico(s.id);
                         });
                     });
 
-
+//<canvas id="chart-${s.id}"></canvas>
                     const data = response.reduce((result, item) => {
                         result[item.id] = item.id + ' - ' + item.name;
                         return result;
@@ -115,7 +177,8 @@
             const data = JSON.parse(event.data);
             console.log(data)
             const novaMensagem = data
-            adicionarNovosDados(novaMensagem);
+            //adicionarNovosDados(novaMensagem);
+            adicionarDadosAoGrafico(data.deviceId, novaMensagem)
             $(`#span-value-${data.deviceId}`).text(data.value + " °C");
             $(`#span-timestamp-${data.deviceId}`).text(data.timestamp);
             if (firstload === 0) {
@@ -154,26 +217,15 @@
         ws.addEventListener('close', () => {
             console.log('Conexão fechada');
         });
-        var customButtons = [
-            {
-                html: "<span class='mif-chart-dots'></span>",
-                cls: "sys-button",
-                onclick: "alert('You press rocket button')"
-            },
-            {
-                html: "<span class='mif-table'></span>",
-                cls: "sys-button",
-                onclick: "alert('You press rocket button')"
-            }
-        ];
+
         // Defina um limite máximo para o número de pontos de dados a serem mantidos (25 neste caso).
-        const maxDataPoints = 25;
+        // const maxDataPoints = 25;
 
-        // Variáveis para armazenar os dados do gráfico.
-        let chartLabels = [];
-        let chartData = [];
+        // // Variáveis para armazenar os dados do gráfico.
+        // let chartLabels = [];
+        // let chartData = [];
 
-        // const ctx = document.getElementById('myChart_temp');
+        // const ctx = document.getElementById('chart');
 
         // // Crie o gráfico inicial com os arrays vazios.
         // const chart = new Chart(ctx, {
@@ -191,25 +243,25 @@
         //     }
         // });
 
-        // Função para adicionar novos dados ao gráfico.
-        function adicionarNovosDados(mensagem) {
-            // Adicione a nova label de timestamp aos dados do gráfico.
-            const hora = mensagem.timestamp.split(' ')[1];
-            chartLabels.push(hora);
+        // // Função para adicionar novos dados ao gráfico.
+        // function adicionarNovosDados(mensagem) {
+        //     // Adicione a nova label de timestamp aos dados do gráfico.
+        //     const hora = mensagem.timestamp.split(' ')[1];
+        //     chartLabels.push(hora);
 
-            // Adicione o novo valor aos dados do gráfico.
-            chartData.push(parseFloat(mensagem.value));
+        //     // Adicione o novo valor aos dados do gráfico.
+        //     chartData.push(parseFloat(mensagem.value));
 
-            // Verifique se o número de pontos de dados excede o limite máximo.
-            if (chartLabels.length > maxDataPoints) {
-                // Remova o elemento mais antigo.
-                chartLabels.shift();
-                chartData.shift();
-            }
+        //     // Verifique se o número de pontos de dados excede o limite máximo.
+        //     if (chartLabels.length > maxDataPoints) {
+        //         // Remova o elemento mais antigo.
+        //         chartLabels.shift();
+        //         chartData.shift();
+        //     }
 
-            // Atualize o gráfico.
-            //chart.update();
-        }
+        //     // Atualize o gráfico.
+        //     chart.update();
+        // }
 
         // Exemplo de uso: Chame a função adicionarNovosDados sempre que receber uma nova mensagem.
         const novaMensagem = { deviceId: 16, value: '67.63', timestamp: '01/09/2023 15:40:50' };

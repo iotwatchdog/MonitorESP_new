@@ -123,10 +123,9 @@
                 <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
 
                 <div class="app-bar-container ml-auto">
-                    <!-- <a href="#" class="app-bar-item">
-                        <span class="mif-envelop"></span>
-                        <span class="badge bg-green fg-white mt-2 mr-1">4</span>
-                    </a> -->
+                    <a href="#" class="app-bar-item" onclick="Metro.dialog.open('#demoDialog1')">
+                        <span class="mif-cog"></span>
+                    </a>
                     <a href="#" class="app-bar-item">
                         <span class="mif-bell"></span>
                         <span class="badge bg-red fg-white mt-2 mr-1">10</span>
@@ -166,7 +165,54 @@
             <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto"></div>
         </div>
     </div>
-
+    <div class="dialog" data-role="dialog" id="demoDialog1">
+        <div class="dialog-title">Parametrização dos Painéis</div>
+        <div class="dialog-content">
+            Selecione os painéis para exibição:
+            <ul data-role="treeview">
+                <li>
+                    <input type="checkbox" data-role="checkbox" data-caption="Empresa: SLA" title="">
+                    <ul>
+                        <li>
+                            <input type="checkbox" data-role="checkbox" data-caption="Filial: SLA2" title="">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" data-role="checkbox" data-caption=" Departamento: D1" title="">
+                                    <ul>
+                                        <li>
+                                            <input type="checkbox" data-role="checkbox" data-caption=" Painel: QDC" title="">
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <input type="checkbox" data-role="checkbox" data-caption="SEFAZ - SECRETARIA DA FAZENDA" title="">
+                    <ul>
+                        <li>
+                            <input type="checkbox" data-role="checkbox" data-caption="Filial: PIAUI" title="">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" data-role="checkbox" data-caption=" Departamento: GRUPO GERADOR" title="">
+                                    <ul>
+                                        <li>
+                                            <input type="checkbox" data-role="checkbox" data-caption=" Painel: GERADOR 1" title="">
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="dialog-actions">
+            <button class="button js-dialog-close">Cancelar</button>
+            <button class="button primary js-dialog-close">Salvar</button>
+        </div>
+    </div>
 
     <!-- jQuery first, then Metro UI JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
