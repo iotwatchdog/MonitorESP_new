@@ -155,7 +155,7 @@ function getCompanyName() {
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                resolve(response[0].name);
+                resolve(response);
             },
             error: function (error) {
                 reject(error);

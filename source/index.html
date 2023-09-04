@@ -28,6 +28,10 @@
     .group-title {
         margin-left: 6px;
     }
+
+    #logo-ils {
+        height: 50px;
+    }
 </style>
 
 <body class="m4-cloak h-vh-100">
@@ -37,7 +41,8 @@
                 <button class="pull-button m-0 bg-darkCyan-hover">
                     <span class="mif-menu fg-white"></span>
                 </button>
-                <h2 class="text-light m-0 fg-white pl-0" style="line-height: 52px">IoT Watchdog</h2>
+                <!-- <img src="./images/logotipo.png" alt="" id="logo-ils"> -->
+                <h2 class="text-light m-0 fg-white pl-0" style="font-size: 28px;">IoT Link Solutions</h2>
             </div>
 
             <!-- <div class="suggest-box">
@@ -137,13 +142,13 @@
                     <div class="app-bar-container">
                         <a href="#" class="app-bar-item">
                             <img src="images/jek_vorobey2.jpg" class="avatar">
-                            <span class="ml-2 app-bar-name">Lesionerlles B</span>
+                            <span class="ml-2 app-bar-name">Henrique Dornelles</span>
                         </a>
                         <div class="user-block shadow-1" data-role="collapse" data-collapsed="true">
                             <div class="bg-darkCyan fg-white p-2 text-center">
                                 <img src="images/jek_vorobey2.jpg" class="avatar">
-                                <div class="h4 mb-0">Lesionerlles B (Lúcio)</div>
-                                <div>QI 200</div>
+                                <div class="h4 mb-0">Henrique Dornelles</div>
+                                <div>Analista Técnico</div>
                             </div>
                             <!-- <div class="bg-white d-flex flex-justify-between flex-equal-items p-2">
                                 <button class="button flat-button">Followers</button>
@@ -225,7 +230,11 @@
     <script>
         getCompanyName()
             .then(function (companyName) {
-                $('#h2-nome-empresa').text(companyName);
+                if(companyName.length > 1) {
+                    $('#h2-nome-empresa').text('Acesso Gerencial');
+                 } else {
+                    $('#h2-nome-empresa').text(companyName.nome);
+                 }
             })
             .catch(function (error) {
                 console.error('Erro ao obter o nome da empresa:', error);
