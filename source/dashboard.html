@@ -13,31 +13,41 @@
         line-height: 1.6;
     }
 
+    .table-container {
+        margin: 0px !important;
+        border: 0px !important;
+    }
+
+    .table-container thead {
+        border-bottom: 1px solid #e4e4e4 !important;
+    }
+
     .compact td {
         padding: 3px !important;
+        color: #5c5c5c;
+    }
+
+    .panel .panel-title .dropdown-toggle {
+        border: 0px !important;
+    }
+
+    .panel .panel-title .dropdown-toggle::before {
+        border-color: white !important;
+    }
+
+    .more-info-box .content {
+        padding: 4px;
+    }
+
+    .more-info-box .icon {
+        order: 1;
+        margin-top: 8px;
     }
 </style>
+<div class="container" id="main-board">
 
-<div class="container mt-3" id="main-board">
-
-    <!-- <div class="d-flex flex-justify-center" style="max-height: 40vh;">
-        <canvas id="chart"></canvas>
-    </div> -->
 </div>
-
 <script>
-    var panelCustomButtons = [
-        {
-            html: "<span class='mif-chart-dots'></span>",
-            cls: "sys-button",
-            onclick: "alert('You press rocket button')"
-        },
-        {
-            html: "<span class='mif-table'></span>",
-            cls: "sys-button",
-            onclick: "alert('You press rocket button')"
-        }
-    ];
     (function () {
         const graficos = {};
         function criarGrafico(id) {
@@ -46,9 +56,7 @@
             const pai = document.getElementById(`div-chart-${id}`);
             pai.appendChild(canvas)
             canvas.style.width = '100%';
-            canvas.style.maxHeight = '40vh';
-            //document.body.appendChild(canvas);
-
+            canvas.style.maxHeight = '70vh';
             const ctx = canvas.getContext('2d');
             const novoGrafico = new Chart(ctx, {
                 type: 'line',
@@ -61,7 +69,13 @@
                     }],
                 },
                 options: {
-                    // ... (suas opções de gráfico existentes)
+                    plugins: {
+                        lineMarkers: {
+                            Temperatura: 20, // Valor de referência para as marcações
+                            label: 'Valor Máximo',
+                            color: 'red',
+                        }
+                    }
                 }
             });
             graficos[id] = novoGrafico;
@@ -69,26 +83,23 @@
 
         function adicionarDadosAoGrafico(id, mensagem) {
             const grafico = graficos[id];
-
             if (grafico) {
                 const hora = mensagem.timestamp.split(' ')[1];
                 grafico.data.labels.push(hora);
                 grafico.data.datasets[0].data.push(parseFloat(mensagem.value));
 
-                // Verifique se o número de pontos de dados excede o limite máximo.
-                if (grafico.data.labels.length > 25) {
+                if (grafico.data.labels.length > 30) {
                     grafico.data.labels.shift();
                     grafico.data.datasets[0].data.shift();
                 }
-
-                // Atualize o gráfico.
                 grafico.update();
             } else {
-                // Se o gráfico com o ID especificado não existir, crie-o.
                 criarGrafico(id);
                 adicionarDadosAoGrafico(id, mensagem);
             }
         }
+        //<div data-role="window" data-icon="<span class='mif-rocket'></span>"class="p-2"></div>
+
         $(document).ready(function () {
             $.ajax({
                 url: urlserver + '/get-loadmonitor',
@@ -96,14 +107,55 @@
                 dataType: 'json',
                 success: function (response) {
                     response.forEach(e => {
-                        $('#main-board').append(`<div class="mt-1" data-id="panel-${e.idpainel}" data-role="panel" data-title-caption="${e.empresa} - ${e.painel}" data-collapsible="true"
-                                                    data-cls-title="bg-cyan fg-white" data-cls-panel="shadow-1" data-title-icon="<span class='mif-meter'></span>"></div>`);
-                        //data-custom-buttons="panelCustomButtons" 
-                        e.sensors.forEach(s => {
+                        // data-title-icon="<span class='mif-meter'></span>"
+                        $('#main-board').append(`
+                            <div class="row mt-0" id="panel-board-${e.idpainel}">
+                                <div class="cell-lg-12 cell-sm-12">
+                                    <div class="mt-1" data-id="panel-${e.idpainel}" data-role="panel" data-title-caption="${e.empresa} - ${e.painel}" data-collapsible="true"
+                                                 data-cls-title="bg-darkCyan fg-white" data-cls-panel="shadow-1">
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                        e.sensors.forEach((s, i) => {
                             $(`[data-id="panel-${e.idpainel}`).append(
                                 `<div class="row">
-                                    <div class="cell-lg-12 cell-sm-12">
-                                        <div class="icon-box border bd-default">
+                                    <div class="cell-lg-12 cell-sm-12 pt-0 ${i === s.length - 1 ? 'pb-0' : ''}">
+                                        <div class="more-info-box bg-lightGray fg-white mt-0" style="height: auto;" id="panel-${s.id}">
+                                            <div class="icon" style="order: 1; margin-left: 16px;">
+                                                <span class="mif-wifi-off" id="panel-icon-${s.id}"></span>
+                                            </div>
+                                            <div class="content" style="order: 2">
+                                                <span class="text-bold mb-0" id="panel-label-sensor-${s.id}">${s.sensor}</span>
+                                                <h2 class="text-bold mb-0 mt-0" id="panel-label-value-${s.id}">Offline</h2>
+                                                <div id="panel-label-timestamp-${s.id}">Offline</div>
+                                            </div>
+                                            <div class="icon" style="order: 3; cursor: pointer" id="collapse-toggle-${s.id}">
+                                                <span class="fg-white mif-chevron-thin-down mif" style="font-size: 2em; height: auto; width: auto;"></span>
+                                            </div>
+                                        </div>
+                                        <div class="pos-relative border bd-lightgray">
+                                            <div class="fg-white" data-role="collapse" data-collapsed="true" data-toggle-element="#collapse-toggle-${s.id}">
+                                                <div class="row  p-2">
+                                                    <div class="cell-lg-8 cell-sm-12 pt-0 pb-0">
+                                                        <div id="div-chart-${s.id}" class="d-flex flex-justify-center"></div>
+                                                    </div>
+                                                    <div class="cell-lg-4 cell-sm-12 pt-0 pb-0">
+                                                        <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-rows="20" 
+                                                            data-pagination="true" data-show-all-pages="false" data-show-search="false" data-show-rows-steps="false">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th data-sortable=true data-format="datetime">Data/Hora</th>
+                                                                    <th data-sortable=true data-format="number">Valor</th>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="icon-box border bd-default" style="display:none;">
                                             <div class="icon " id="span-bg-${s.id}"><span id="span-ico-${s.id}" class="mif-thermometer2"></span></div>
                                             <div class="content p-1" style="font-size: 12px;">
                                                 <div class="text-upper text-bold text-lead" id="div-sensor-${s.id}">${s.sensor}</div>
@@ -113,7 +165,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" style="display:none;">
                                     <div class="cell-lg-12 cell-sm-12">
                                         <div data-id="panel-chart-${s.id}" data-role="panel" data-title-caption="GRÁFICO & LOG" data-collapsible="true"
                                             data-collapsed="true" data-title-icon="<span class='mif-chart-dots'></span>">
@@ -122,7 +174,7 @@
                                                     <div id="div-chart-${s.id}" class="d-flex flex-justify-center">
                                                     </div>
                                                 </div>
-                                                <div class="cell-lg-4 cell-sm-12">
+                                                <div class="cell-lg-4 cell-sm-12 pt-0">
                                                     <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-rows="20" 
                                                     data-pagination="true" data-show-all-pages="false" data-show-search="false" data-show-rows-steps="false">
                                                          <thead>
@@ -150,9 +202,25 @@
                 error: function (error) {
                     console.error('Erro ao carregar branches:', error);
                 }
-            });
-        });
 
+
+            });
+
+
+        });
+        // function rotate180(element) {
+        //     // Obtém o ícone interno dentro da div
+        //     const icon = element.querySelector('.mif-chevron-thin-down');
+
+        //     // Verifica se o ícone está girado 180 graus
+        //     if (icon.style.transform === 'rotate(180deg)') {
+        //         // Se estiver, volte para a posição original (0 grau)
+        //         icon.style.transform = 'rotate(0deg)';
+        //     } else {
+        //         // Caso contrário, gire 180 graus
+        //         icon.style.transform = 'rotate(180deg)';
+        //     }
+        // }
         //let tempoAcumulado = 0;
 
         //const ws = new WebSocket(server.teste.ws);
@@ -168,29 +236,40 @@
             console.log(data)
             const novaMensagem = data
             adicionarDadosAoGrafico(data.deviceId, novaMensagem)
+            $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-red').addClass('bg-darkGray');
+            $(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off').removeClass('ani-shuttle').addClass('mif-thermometer2').addClass('fg-white');
+            $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C");
+            $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
+
             $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
-            $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');;
+            $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');
             if (firstload === 0) {
                 firstload = 1;
                 $(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
-
             } else {
                 var rows = [data.value, data.timestamp]
                 var tbl = Metro.getPlugin(`#table-monitorhistory-${data.deviceId}`, 'table');
                 tbl.addItem(rows, true);
             }
-            if (data.value > 60) {
+            if (data.value > 50) {
+                $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').addClass('bg-red');
+                //$(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off').addClass('mif-thermometer2').addClass('fg-white');
+                $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C");
+                $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
+                $(`#panel-icon-${data.deviceId}`).addClass('ani-shuttle');
+
                 $(`#span-ico-${data.deviceId}`).addClass('ani-shuttle');
                 $(`#span-bg-${data.deviceId}`).addClass('ribbed-red').addClass('fg-white');
                 if (alert === 0) {
                     openDemoDialogActions('Alerta de Temperatura', 'Este alerta é gerado quando a temperatura ultrapassa 60°C.');
                     alert = 1;
                 }
-            } else if (data.value < 0) {
-                $(`#span-ico-${data.deviceId}`).addClass('ani-shuttle')
+            } else if (data.value < 10) {
+                $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').removeClass('bg-red').addClass('bg-blue');
+                $(`#panel-icon-${data.deviceId}`).addClass('ani-shuttle');
                 $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').addClass('ribbed-cyan').addClass('fg-white')
                 if (alert === 0) {
-                    alert = 1;
+                    //alert = 1;
                 }
             } else {
                 $(`#span-ico-${data.deviceId}`).removeClass('ani-shuttle')
