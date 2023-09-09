@@ -48,8 +48,8 @@
     function handleCheckboxClick(e) {
         const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
         const rowData = {
-            id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
-            name: row.cells[3].textContent  // Obtém o conteúdo da terceira célula
+            id: $(row).find('td:eq(2)').text(),
+            name: $(row).find('td:eq(3)').text()
         };
         $('#ttb-department-id').val(rowData.id)
         $('#ttb-department-name').val(rowData.name)
@@ -58,12 +58,14 @@
     $(document).ready(function () {
         getCompanyList();
         $('#ddl-company').on('change', function () {
+            $('#table-department').data('table').loadData([], true);
+            $("#ddl-branch", 'select').data([]);
             getBranchList($(this).val())
             $('#ttb-branch-id, #ttb-branch-name').val('');
-            $('#table-department').data('table').loadData('./data/department.json');
         });
 
         $('#ddl-branch').on('change', function () {
+            console.log('change')
             var selectedId = $(this).val();
             $('#table-department').data('table').loadData(`${urlserver}/get-table-department?idbranch=${selectedId}`, true);
         });

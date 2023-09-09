@@ -43,93 +43,73 @@
         function handleCheckboxClick(e) {
             const row = e.closest("tr"); // Encontra a linha da tabela mais próxima
             const rowData = {
-                id: row.cells[2].textContent, // Obtém o conteúdo da segunda célula
-                name: row.cells[3].textContent  // Obtém o conteúdo da terceira célula
+                id: $(row).find('td:eq(2)').text(), 
+                name: $(row).find('td:eq(3)').text()  
             };
             $('#ttb-branch-id').val(rowData.id)
             $('#ttb-branch-name').val(rowData.name)
         }
 
+        (function (urlserver) {
+            $(document).ready(function () {
+                getCompanyList();
+                $('#ddl-company').on('change', function () {
+                    $('#ttb-branch-id, #ttb-branch-name').val('');
+                    var selectedCompanyId = $(this).val();
+                    $('#table-branch').data('table').loadData(`${urlserver}/get-table-branch?idcompany=${selectedCompanyId}`, true);
+                });
 
-        $(document).ready(function () {
-            getCompanyList();
-            $('#ddl-company').on('change', function () {
-                $('#ttb-branch-id, #ttb-branch-name').val('');
-                var selectedCompanyId = $(this).val();
-                $('#table-branch').data('table').resetView();
-                $('#table-branch').data('table').loadData(`${urlserver}/get-table-branch?idcompany=${selectedCompanyId}`, true);
-            });
+                $('#btn-salvar').on('click', function (event) {
+                    var result = {
+                        val: 0,
+                        log: []
+                    }
+                    var isValid = Metro.validator.validate($('#ttb-branch-name'), result)
 
-            $('#btn-salvar').on('click', function (event) {
-                var result = {
-                    val: 0,
-                    log: []
-                }
-                var isValid = Metro.validator.validate($('#ttb-branch-name'), result)
-
-                if (isValid) {
-                    var id = $('#ttb-branch-id').val();
-                    var idcompany = $('#ddl-company').val();
-                    var name = $('#ttb-branch-name').val();
-                    var postData = {
-                        id: id,
-                        idcompany: idcompany,
-                        name: name,
-                        isdeleted: 0
-                    };
-                    console.log(postData)
-                    $.ajax({
-                        url: urlserver + '/post-branch', // Endpoint correto
-                        type: 'POST',
-                        data: JSON.stringify(postData),
-                        contentType: 'application/json',
-                        success: function (response) {
-                            if ($('#ttb-branch-id').val() === '') {
-                                $('#ttb-branch-id').val(response.id);
-                            }
-                            $('#table-branch').data('table').reload();
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Erro ao adicionar empresa:', error);
-                        }
-                    });
-                } else {
-                    openDemoDialogActions();
-                }
-            });
-
-            $('#btn-excluir').on('click', function (event) {
-                var id = $('#ttb-branch-id').val();
-                var idcompany = $('#ddl-company').val();
-                var name = $('#ttb-branch-name').val();
-                var postData = {
-                    id: id,
-                    idcompany: idcompany,
-                    name: name,
-                    isdeleted: 1
-                };
-                console.log(postData)
-                $.ajax({
-                    url: urlserver + '/post-branch', // Endpoint correto
-                    type: 'POST',
-                    data: JSON.stringify(postData),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        $('#ttb-branch-id, #ttb-branch-name').val('');
-                        $('#table-branch').data('table').reload();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Erro ao adicionar empresa:', error);
+                    if (isValid) {
+                        var id = $('#ttb-branch-id').val();
+                        var idcompany = $('#ddl-company').val();
+                        var name = $('#ttb-branch-name').val();
+                        var postData = {
+                            id: id,
+                            idcompany: idcompany,
+                            name: name,
+                            isdeleted: 0
+                        };
+                        insertData(postData, 'branch')
+                    } else {
+                        openDemoDialogActions('FALHA AO CADASTRAR', 'O CAMPO <b>NOME</b> DEVE SER PREENCHIDO!');
                     }
                 });
+
+                $('#btn-excluir').on('click', function (event) {
+                    var result = {
+                        val: 0,
+                        log: []
+                    }
+                    var isValid = Metro.validator.validate($('#ttb-branch-name'), result)
+
+                    if (isValid) {
+                        var id = $('#ttb-branch-id').val();
+                        var idcompany = $('#ddl-company').val();
+                        var name = $('#ttb-branch-name').val();
+                        var postData = {
+                            id: id,
+                            idcompany: idcompany,
+                            name: name,
+                            isdeleted: 1
+                        };
+                        insertData(postData, 'branch')
+                    } else {
+                        openDemoDialogActions('FALHA AO CADASTRAR', 'O CAMPO <b>NOME</b> DEVE SER PREENCHIDO!');
+                    }
+                });
+
+                $('#btn-novo, #btn-cancelar').on('click', function (event) {
+                    $('#ttb-branch-id, #ttb-branch-name').val('');
+                });
+
             });
-
-            $('#btn-novo, #btn-cancelar').on('click', function (event) {
-                $('#ttb-branch-id, #ttb-branch-name').val('');
-            });
-
-        });
-
-
+        })(urlserver)
     </script>
 </div>

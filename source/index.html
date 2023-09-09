@@ -9,6 +9,7 @@
     <!-- Metro 4 -->
     <link rel="stylesheet" href="vendors/metro4/css/metro-all.min.css">
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/loader.css">
     <script defer type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>IoTLink Solutions - Monitor</title>
 
@@ -35,6 +36,14 @@
 </style>
 
 <body class="m4-cloak h-vh-100">
+    <div class="loader-screen" id="load-screen">
+        <div class="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
     <div data-role="navview" data-toggle="#paneToggle" data-expand="xl" data-compact="lg" data-active-state="true">
         <div class="navview-pane">
             <div class="bg-cyan d-flex flex-align-center">
@@ -116,8 +125,7 @@
 
             <div class="w-100 text-center text-small data-box p-2 border-top bd-grayMouse"
                 style="position: absolute; bottom: 0">
-                <div>&copy; 2023 <a href="mailto:iotwhatcdog@gmail.com" class="text-muted fg-white-hover no-decor">IoT
-                        Watchdog</a></div>
+                <div>&copy; 2023 <a href="mailto:iotwhatcdog@gmail.com" class="text-muted fg-white-hover no-decor"></a></div>
             </div>
         </div>
 
@@ -182,10 +190,12 @@
                             <input type="checkbox" data-role="checkbox" data-caption="Filial: SLA2" title="">
                             <ul>
                                 <li>
-                                    <input type="checkbox" data-role="checkbox" data-caption=" Departamento: D1" title="">
+                                    <input type="checkbox" data-role="checkbox" data-caption=" Departamento: D1"
+                                        title="">
                                     <ul>
                                         <li>
-                                            <input type="checkbox" data-role="checkbox" data-caption=" Painel: QDC" title="">
+                                            <input type="checkbox" data-role="checkbox" data-caption=" Painel: QDC"
+                                                title="">
                                         </li>
                                     </ul>
                                 </li>
@@ -200,10 +210,12 @@
                             <input type="checkbox" data-role="checkbox" data-caption="Filial: PIAUI" title="">
                             <ul>
                                 <li>
-                                    <input type="checkbox" data-role="checkbox" data-caption=" Departamento: GRUPO GERADOR" title="">
+                                    <input type="checkbox" data-role="checkbox"
+                                        data-caption=" Departamento: GRUPO GERADOR" title="">
                                     <ul>
                                         <li>
-                                            <input type="checkbox" data-role="checkbox" data-caption=" Painel: GERADOR 1" title="">
+                                            <input type="checkbox" data-role="checkbox"
+                                                data-caption=" Painel: GERADOR 1" title="">
                                         </li>
                                     </ul>
                                 </li>
@@ -228,13 +240,16 @@
     <script src="vendors/metro4/js/metro.min.js"></script>
     <script src="js/index.js"></script>
     <script>
+        $('.loader-screen').show();
         getCompanyName()
             .then(function (companyName) {
-                if(companyName.length > 1) {
+                
+                if (companyName.length > 1) {
                     $('#h2-nome-empresa').text('Acesso Gerencial');
-                 } else {
+                } else {
                     $('#h2-nome-empresa').text(companyName.nome);
-                 }
+                }
+                $('.loader-screen').hide();
             })
             .catch(function (error) {
                 console.error('Erro ao obter o nome da empresa:', error);

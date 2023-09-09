@@ -166,6 +166,25 @@ function getCompanyName() {
 
 // Uso da função
 
+async function insertData(pPostData, pTableName) {
+    $.ajax({
+        url: urlserver + `/post-${pTableName}`,
+        type: 'POST',
+        data: JSON.stringify(pPostData),
+        contentType: 'application/json',
+        success: function (response) {
+            if ($(`#ttb-${pTableName}-id`).val() === '') {
+                $(`#ttb-${pTableName}-id`).val(response.id);
+            }
+            $(`#table-${pTableName}`).data('table').reload();
+            $('#btn-novo').click();
+        },
+        error: function (xhr, status, error) {
+            console.error('Erro ao adicionar empresa:', error);
+            openDemoDialogActions('FALHA AO CADASTRAR', 'HOUVE UMA FALHA DURANTE O CADASTRO <BR> PROCURE O SUPORTE TÉCNICO');
+        }
+    });
+};
 
 function getBranchList(pIdCompany) {
     $.ajax({

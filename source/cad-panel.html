@@ -65,14 +65,15 @@
     $(document).ready(function () {
         getCompanyList();
         $('#ddl-company').on('change', function () {
-            $('#table-panel').data('table').loadData('./data/panel.json');
+            $('#table-panel').data('table').loadData([], true);
+            Metro.getPlugin("#ddl-branch", 'select').data([]);
+            Metro.getPlugin("#ddl-department", 'select').data([]);
             getBranchList($(this).val())
             $('#ttb-panel-id, #ttb-panel-name').val('');
 
         });
         $('#ddl-branch').on('change', function () {
             getDepartmentList($(this).val())
-            $('#table-panel').data('table').loadData('./data/panel.json');
         });
 
         $('#ddl-department').on('change', function () {

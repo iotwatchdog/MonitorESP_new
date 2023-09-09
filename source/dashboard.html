@@ -119,11 +119,25 @@
                             </div>
                         `);
                         e.sensors.forEach((s, i) => {
+                            console.log(i, e.sensors.length)
                             $(`[data-id="panel-${e.idpainel}`).append(
                                 `<div class="row">
-                                    <div class="cell-lg-12 cell-sm-12 pt-0 ${i === s.length - 1 ? 'pb-0' : ''}">
-                                        <div class="more-info-box bg-lightGray fg-white mt-0" style="height: auto;" id="panel-${s.id}">
-                                            <div class="icon" style="order: 1; margin-left: 16px;">
+                                    <div class="cell-lg-12 cell-sm-12 pt-0 ${i === e.sensors.length - 1 ? 'pb-0' : ''}">
+                                        <div class="icon-box mt-0 border border-size-1 bd-lightGray" id="panel-${s.id}">
+                                            <div class="icon bg-lighGray fg-white" id="panel-div-icon-${s.id}">
+                                                <span class="mif-wifi-off" id="panel-icon-${s.id}"></span>
+                                            </div>
+                                            <div class="content p-1 fg-lightGray" style=" line-height: 1.2">
+                                                <div class="text-bold m-0" id="panel-label-sensor-${s.id}">${s.sensor}</div>
+                                                <div class="text-bold m-0 mt-0" id="panel-label-value-${s.id}">Offline</div>
+                                                <div id="panel-label-timestamp-${s.id}">Offline</div>
+                                            </div>
+                                            <div class="icon bg-white fg-black" style="cursor: pointer" id="collapse-toggle-${s.id}">
+                                                <span class="mif-chevron-thin-down" style="font-size: 1.2em; height: auto; width: auto;"></span>
+                                            </div>
+                                        </div>
+                                        <div class="more-info-box bg-lightGray fg-white mt-0" style="height: auto; display:none" id="panel-${s.id}">
+                                            <div class="icon bg-gray" style="order: 1; margin-left: 16px; ">
                                                 <span class="mif-wifi-off" id="panel-icon-${s.id}"></span>
                                             </div>
                                             <div class="content" style="order: 2">
@@ -135,7 +149,7 @@
                                                 <span class="fg-white mif-chevron-thin-down mif" style="font-size: 2em; height: auto; width: auto;"></span>
                                             </div>
                                         </div>
-                                        <div class="pos-relative border bd-lightgray">
+                                        <div class="pos-relative border-right-bottom-left bd-lightGray">
                                             <div class="fg-white" data-role="collapse" data-collapsed="true" data-toggle-element="#collapse-toggle-${s.id}">
                                                 <div class="row  p-2">
                                                     <div class="cell-lg-8 cell-sm-12 pt-0 pb-0">
@@ -234,16 +248,19 @@
         var firstload = 0;
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            console.log(data)
-            const novaMensagem = data
-            adicionarDadosAoGrafico(data.deviceId, novaMensagem)
-            $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-red').addClass('bg-darkGray');
-            $(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off').removeClass('ani-shuttle').addClass('mif-thermometer2').addClass('fg-white');
-            $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C");
-            $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
+            //const novaMensagem = data
+            //console.log(data);
+            adicionarDadosAoGrafico(data.deviceId, data)
+            /* Last Layout */
+            $(`#panel-${data.deviceId}`).removeClass('bd-lightGray bg-lightGray bg-red bg-cyan bd-red bd-cyan').addClass('bg-darkGrey fg-darkGray bd-darkGray');
+            $(`#panel-div-icon-${data.deviceId}`).removeClass('bg-lightGray ribbed-cyan ribbed-red').addClass('ribbed-darkGray');
+            if (1 === 1) { //Alterar icone conforme cadastro
+                $(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off ani-shuttle').addClass('mif-thermometer2 fg-white');
+            }
+            $(`#panel-label-sensor-${data.deviceId}`).addClass('fg-darkGray ');
+            $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C").addClass('fg-darkGray');
+            $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp).addClass('fg-darkGray');
 
-            $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
-            $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');
             if (firstload === 0) {
                 firstload = 1;
                 $(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
@@ -252,10 +269,13 @@
                 var tbl = Metro.getPlugin(`#table-monitorhistory-${data.deviceId}`, 'table');
                 tbl.addItem(rows, true);
             }
+            // $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
+            // $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');
             if (data.value > 50) {
-                $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').addClass('bg-red');
+                //$(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').addClass('bg-red');
                 //$(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off').addClass('mif-thermometer2').addClass('fg-white');
-                $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C");
+                $(`#panel-${data.deviceId}`).removeClass('bd-darkGray bd-cyan').addClass('bd-red');
+                $(`#panel-div-icon-${data.deviceId}`).removeClass('ribbed-darkGray').addClass('ribbed-red');
                 $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
                 $(`#panel-icon-${data.deviceId}`).addClass('ani-shuttle');
 
@@ -265,18 +285,22 @@
                     openDemoDialogActions('Alerta de Temperatura', 'Este alerta é gerado quando a temperatura ultrapassa 60°C.');
                     alert = 1;
                 }
-            } else if (data.value < 10) {
-                $(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').removeClass('bg-red').addClass('bg-blue');
+            }
+            if (data.value < 10) {
+                //$(`#panel-${data.deviceId}`).removeClass('bg-lightGray').removeClass('bg-darkGray').removeClass('bg-red').addClass('bg-blue');
+                $(`#panel-${data.deviceId}`).removeClass('bd-darkGray').addClass('bd-cyan');
+                $(`#panel-div-icon-${data.deviceId}`).removeClass('ribbed-darkGray').addClass('ribbed-cyan');
                 $(`#panel-icon-${data.deviceId}`).addClass('ani-shuttle');
                 $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').addClass('ribbed-cyan').addClass('fg-white')
                 if (alert === 0) {
                     //alert = 1;
                 }
-            } else {
-                $(`#span-ico-${data.deviceId}`).removeClass('ani-shuttle')
-                $(`#span-bg-${data.deviceId}`).removeClass('fg-white')
-                $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').removeClass('ribbed-cyan')
             }
+            // else {
+            //     $(`#span-ico-${data.deviceId}`).removeClass('ani-shuttle')
+            //     $(`#span-bg-${data.deviceId}`).removeClass('fg-white')
+            //     $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').removeClass('ribbed-cyan')
+            // }
 
         });
 
