@@ -22,6 +22,11 @@
         border-bottom: 1px solid #e4e4e4 !important;
     }
 
+
+    .table-bottom {
+        display: none !important;
+    }
+
     .compact td {
         padding: 3px !important;
         color: #5c5c5c;
@@ -46,10 +51,62 @@
     }
 </style>
 <div class="container" id="main-board">
-
+    <div id="chart-google-116" class="d-flex flex-justify-center"></div>
 </div>
+
 <script>
+
+
     (function () {
+
+
+        let graficosGoogle = {};
+
+        // Função para criar um gráfico de barras
+        function criarGraficoGoogle(item) {
+            const data = new google.visualization.DataTable();
+            data.addColumn('string', 'Categoria');
+            data.addColumn('number', 'Valor');
+
+            const options = {
+                title: 'Gráfico de Barras para ' + item,
+                width: 400,
+                height: 300,
+                bars: 'vertical',
+            };
+
+            const chart = new google.visualization.ColumnChart(document.getElementById('chart-google-' + item));
+
+            graficos[item] = {
+                chart: chart,
+                data: data,
+                options: options,
+            };
+
+            chart.draw(data, options);
+        }
+
+
+        // google.charts.load("current", { packages: ["corechart"] });
+        // google.charts.setOnLoadCallback(drawChart2);
+        // function drawChart2(pData) {
+        //     var data = google.visualization.arrayToDataTable([
+        //         ["Element", "Density", { role: "style" }]
+
+        //         // ["Copper", 8.94, "#b87333"],
+        //         // ["Silver", 10.49, "silver"],
+        //         // ["Gold", 19.30, "gold"],
+        //         // ["Platinum", 21.45, "color: #e5e4e2"]
+        //     ]);
+        //     var options = {
+        //         title: 'Lengths of dinosaurs, in meters',
+        //         legend: { position: 'none' },
+        //     };
+
+        //     var chart = new google.visualization.ColumnChart(document.getElementById('chart-google-116'));
+        //     chart.draw(data, options);
+        // }
+
         const graficos = {};
         function criarGrafico(id) {
             const canvas = document.createElement('canvas');
@@ -57,7 +114,7 @@
             const pai = document.getElementById(`div-chart-${id}`);
             pai.appendChild(canvas)
             canvas.style.width = '100%';
-            canvas.style.maxHeight = '70vh';
+            canvas.style.maxHeight = '280px';
             const ctx = canvas.getContext('2d');
             const novoGrafico = new Chart(ctx, {
                 type: 'line',
@@ -99,6 +156,25 @@
                 adicionarDadosAoGrafico(id, mensagem);
             }
         }
+
+        // Função para adicionar dados ao gráfico do Google Charts
+        function adicionarDadosAoGraficoGoogle(id, mensagem) {
+            const grafico = graficos[id];
+
+            if (grafico) {
+                const hora = mensagem.timestamp.split(' ')[1];
+                grafico.addRow([hora, parseFloat(mensagem.value)]);
+
+                if (grafico.getNumberOfRows() > 30) {
+                    grafico.removeRow(0);
+                }
+
+                grafico.draw(graficoOptions);
+            } else {
+                adicionarDadosAoGraficoGoogle(id, mensagem);
+            }
+        }
+
         //<div data-role="window" data-icon="<span class='mif-rocket'></span>"class="p-2"></div>
 
         $(document).ready(function () {
@@ -120,6 +196,7 @@
                         `);
                         e.sensors.forEach((s, i) => {
                             console.log(i, e.sensors.length)
+
                             $(`[data-id="panel-${e.idpainel}`).append(
                                 `<div class="row">
                                     <div class="cell-lg-12 cell-sm-12 pt-0 ${i === e.sensors.length - 1 ? 'pb-0' : ''}">
@@ -154,6 +231,7 @@
                                                 <div class="row  p-2">
                                                     <div class="cell-lg-8 cell-sm-12 pt-0 pb-0">
                                                         <div id="div-chart-${s.id}" class="d-flex flex-justify-center"></div>
+                                                        <div id="chart-google-${s.id}" class="d-flex flex-justify-center"></div>
                                                     </div>
                                                     <div class="cell-lg-4 cell-sm-12 pt-0 pb-0">
                                                         <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-rows="20" 
@@ -161,7 +239,7 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th data-sortable=true data-format="datetime">Data/Hora</th>
-                                                                    <th data-sortable=true data-format="number">Valor</th>
+                                                                    <th data-sortable=true data-format="number" class="text-right">Valor</th>
                                                                 </tr>
                                                             </thead>
                                                         </table>
@@ -179,33 +257,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row" style="display:none;">
-                                    <div class="cell-lg-12 cell-sm-12">
-                                        <div data-id="panel-chart-${s.id}" data-role="panel" data-title-caption="GRÁFICO & LOG" data-collapsible="true"
-                                            data-collapsed="true" data-title-icon="<span class='mif-chart-dots'></span>">
-                                            <div class="row">
-                                                <div class="cell-lg-8 cell-sm-12">
-                                                    <div id="div-chart-${s.id}" class="d-flex flex-justify-center">
-                                                    </div>
-                                                </div>
-                                                <div class="cell-lg-4 cell-sm-12 pt-0">
-                                                    <table id="table-monitorhistory-${s.id}" class="table compact striped table-border" data-role="table" data-rows="10" 
-                                                    data-pagination="true" data-show-all-pages="false" data-show-search="false" data-show-rows-steps="false">
-                                                         <thead>
-                                                             <tr>
-                                                                 <th data-sortable=true data-format="number">Valor</th>
-                                                                 <th data-sortable=true data-format="datetime">Data/Hora</th>
-                                                             </tr>
-                                                         </thead>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>`
                             );
                             criarGrafico(s.id);
+                            //criarGraficoGoogle(s.id)
+
                         });
                     });
                     //<canvas id="chart-${s.id}"></canvas>
@@ -220,6 +276,8 @@
 
 
             });
+
+
 
 
         });
@@ -246,6 +304,7 @@
         });
         var alert = 0;
         var firstload = 0;
+        var loadedTables = [];
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
             //const novaMensagem = data
@@ -261,14 +320,22 @@
             $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C").addClass('fg-darkGray');
             $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp).addClass('fg-darkGray');
 
-            if (firstload === 0) {
-                firstload = 1;
-                $(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
-            } else {
-                var rows = [data.value, data.timestamp]
-                var tbl = Metro.getPlugin(`#table-monitorhistory-${data.deviceId}`, 'table');
-                tbl.addItem(rows, true);
-            }
+            // if (firstload === 0) {
+            //     firstload = 1;
+            //     //$(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
+            // } else {
+            $(`#table-monitorhistory-${data.deviceId} tbody tr:has(td:only-child)`).remove();
+            var rows = [data.timestamp, data.value];
+            var tbody = $(`#table-monitorhistory-${data.deviceId}`).find('tbody');
+
+
+            // Crie uma nova linha e adicione-a ao início do tbody
+            var newRow = $('<tr>');
+            rows.forEach(function (cellData, index) {
+                newRow.append($(`<td ${index === 1 ? ' class="text-right"' : ''}>`).text(cellData));
+            });
+            tbody.prepend(newRow);
+            // }
             // $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
             // $(`#span-timestamp-${data.deviceId}`).text(data.timestamp).removeClass('fg-red');
             if (data.value > 50) {
@@ -301,11 +368,17 @@
             //     $(`#span-bg-${data.deviceId}`).removeClass('fg-white')
             //     $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').removeClass('ribbed-cyan')
             // }
+            if (tbody.find('tr').length > 10) {
+                tbody.find('tr:last').remove();
+            }
 
         });
 
         ws.addEventListener('close', () => {
             console.log('Conexão fechada');
         });
+
+
+
     })();
 </script>

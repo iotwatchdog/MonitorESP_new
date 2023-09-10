@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="vendors/metro4/css/metro-all.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/loader.css">
-    <script defer type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>IoTLink Solutions - Monitor</title>
 
     <script>
@@ -125,7 +125,8 @@
 
             <div class="w-100 text-center text-small data-box p-2 border-top bd-grayMouse"
                 style="position: absolute; bottom: 0">
-                <div>&copy; 2023 <a href="mailto:iotwhatcdog@gmail.com" class="text-muted fg-white-hover no-decor"></a></div>
+                <div>&copy; 2023 <a href="mailto:iotwhatcdog@gmail.com" class="text-muted fg-white-hover no-decor"></a>
+                </div>
             </div>
         </div>
 
@@ -231,6 +232,7 @@
         </div>
     </div>
 
+
     <!-- jQuery first, then Metro UI JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <!-- <script src="vendors/chartjs/Chart.bundle.min.js"></script> -->
@@ -240,10 +242,13 @@
     <script src="vendors/metro4/js/metro.min.js"></script>
     <script src="js/index.js"></script>
     <script>
+
+
+
         $('.loader-screen').show();
         getCompanyName()
             .then(function (companyName) {
-                
+
                 if (companyName.length > 1) {
                     $('#h2-nome-empresa').text('Acesso Gerencial');
                 } else {
@@ -255,6 +260,7 @@
                 console.error('Erro ao obter o nome da empresa:', error);
             });
     </script>
+    
 </body>
 
 </html>
