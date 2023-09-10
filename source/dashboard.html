@@ -114,27 +114,24 @@
             const pai = document.getElementById(`div-chart-${id}`);
             pai.appendChild(canvas)
             canvas.style.width = '100%';
-            canvas.style.maxHeight = '280px';
+            canvas.style.maxHeight = '290px';
             const ctx = canvas.getContext('2d');
             const novoGrafico = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'Temperatura',
                         data: [],
-                        borderWidth: 2
+                        borderWidth: 1,
+                        backgroundColor: []
                     }],
                 },
                 options: {
                     plugins: {
-                        lineMarkers: {
-                            Temperatura: 20, // Valor de referência para as marcações
-                            label: 'Valor Máximo',
-                            color: 'red',
-                        }
+                        legend: { display: false }
                     }
                 }
+
             });
             graficos[id] = novoGrafico;
         }
@@ -143,8 +140,30 @@
             const grafico = graficos[id];
             if (grafico) {
                 const hora = mensagem.timestamp.split(' ')[1];
+                const valor = parseFloat(mensagem.value);
                 grafico.data.labels.push(hora);
-                grafico.data.datasets[0].data.push(parseFloat(mensagem.value));
+
+                let cor = null;
+                if (valor > 50) {
+                    cor = '#CE352C '
+                }
+
+                if (valor < 10) {
+                    cor = '#1ba1e2  '
+                }
+
+
+
+                grafico.data.datasets[0].data.push(
+                    mensagem.value
+                    // segment: {
+                    //     backgroundColor: cor
+                    // }
+                );
+                grafico.data.datasets[0].backgroundColor.push(cor)
+                console.log(grafico.data.datasets[0].backgroundColor)
+                //grafico.data.datasets[0].data.push(parseFloat(mensagem.value));
+
 
                 if (grafico.data.labels.length > 30) {
                     grafico.data.labels.shift();
@@ -307,10 +326,7 @@
         var loadedTables = [];
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            //const novaMensagem = data
-            //console.log(data);
             adicionarDadosAoGrafico(data.deviceId, data)
-            /* Last Layout */
             $(`#panel-${data.deviceId}`).removeClass('bd-lightGray bg-lightGray bg-red bg-cyan bd-red bd-cyan').addClass('bg-darkGrey fg-darkGray bd-darkGray');
             $(`#panel-div-icon-${data.deviceId}`).removeClass('bg-lightGray ribbed-cyan ribbed-red').addClass('ribbed-darkGray');
             if (1 === 1) { //Alterar icone conforme cadastro
