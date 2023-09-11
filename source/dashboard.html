@@ -49,9 +49,13 @@
         width: 40px !important;
         margin-top: 8px;
     }
+
+    .td-exception {
+        color: white !important;
+        font-weight: 500 !important;
+    }
 </style>
 <div class="container" id="main-board">
-    <div id="chart-google-116" class="d-flex flex-justify-center"></div>
 </div>
 
 <script>
@@ -129,6 +133,14 @@
                 options: {
                     plugins: {
                         legend: { display: false }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function (value, context) {
+                            console.log(value, context)
+                            return value; // Mostra o valor do dado na barra
+                        }
                     }
                 }
 
@@ -142,8 +154,7 @@
                 const hora = mensagem.timestamp.split(' ')[1];
                 const valor = parseFloat(mensagem.value);
                 grafico.data.labels.push(hora);
-
-                let cor = null;
+                let cor = '#989898';
                 if (valor > 50) {
                     cor = '#CE352C '
                 }
@@ -151,23 +162,12 @@
                 if (valor < 10) {
                     cor = '#1ba1e2  '
                 }
-
-
-
-                grafico.data.datasets[0].data.push(
-                    mensagem.value
-                    // segment: {
-                    //     backgroundColor: cor
-                    // }
-                );
+                grafico.data.datasets[0].data.push(valor);
                 grafico.data.datasets[0].backgroundColor.push(cor)
-                console.log(grafico.data.datasets[0].backgroundColor)
-                //grafico.data.datasets[0].data.push(parseFloat(mensagem.value));
-
-
                 if (grafico.data.labels.length > 30) {
                     grafico.data.labels.shift();
                     grafico.data.datasets[0].data.shift();
+                    grafico.data.datasets[0].backgroundColor.shift();
                 }
                 grafico.update();
             } else {
@@ -214,8 +214,6 @@
                             </div>
                         `);
                         e.sensors.forEach((s, i) => {
-                            console.log(i, e.sensors.length)
-
                             $(`[data-id="panel-${e.idpainel}`).append(
                                 `<div class="row">
                                     <div class="cell-lg-12 cell-sm-12 pt-0 ${i === e.sensors.length - 1 ? 'pb-0' : ''}">
@@ -347,9 +345,21 @@
 
             // Crie uma nova linha e adicione-a ao início do tbody
             var newRow = $('<tr>');
-            rows.forEach(function (cellData, index) {
-                newRow.append($(`<td ${index === 1 ? ' class="text-right"' : ''}>`).text(cellData));
-            });
+            if (data.value > 50) {
+                newRow.append($(`<td class="bg-red td-exception">`).text(data.timestamp));
+                newRow.append($(`<td class="bg-red td-exception text-right">`).text(data.value));
+            } else if (data.value < 10) {
+                newRow.append($(`<td class="bg-cyan td-exception">`).text(data.timestamp));
+                newRow.append($(`<td class="bg-cyan td-exception text-right">`).text(data.value));
+            } else {
+                newRow.append($(`<td>`).text(data.timestamp));
+                newRow.append($(`<td class="text-right">`).text(data.value));
+            }
+
+
+            if (tbody.find('tr').length > 10) {
+                tbody.find('tr:last').remove();
+            }
             tbody.prepend(newRow);
             // }
             // $(`#span-value-${data.deviceId}`).text(data.value + " °C").removeClass('fg-red');
@@ -384,9 +394,7 @@
             //     $(`#span-bg-${data.deviceId}`).removeClass('fg-white')
             //     $(`#span-bg-${data.deviceId}`).removeClass('ribbed-red').removeClass('ribbed-cyan')
             // }
-            if (tbody.find('tr').length > 10) {
-                tbody.find('tr:last').remove();
-            }
+
 
         });
 
