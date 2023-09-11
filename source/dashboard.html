@@ -126,7 +126,7 @@
                     labels: [],
                     datasets: [{
                         data: [],
-                        borderWidth: 1,
+                        borderWidth: 0,
                         backgroundColor: []
                     }],
                 },
@@ -222,11 +222,11 @@
                                                 <span class="mif-wifi-off" id="panel-icon-${s.id}"></span>
                                             </div>
                                             <div class="content p-1 fg-lightGray" style=" line-height: 1.2">
-                                                <div class="text-bold m-0" id="panel-label-sensor-${s.id}">${s.sensor}</div>
+                                                <div class="text-ellipsis text-bold m-0" id="panel-label-sensor-${s.id}">${s.sensor}</div>
                                                 <div class="text-bold m-0 mt-0" id="panel-label-value-${s.id}">Offline</div>
                                                 <div id="panel-label-timestamp-${s.id}">Offline</div>
                                             </div>
-                                            <div class="icon bg-white fg-black" style="cursor: pointer" id="collapse-toggle-${s.id}">
+                                            <div class="icon bg-white fg-black" style="display: none; cursor: pointer; width: 40px !important;" id="collapse-toggle-${s.id}">
                                                 <span class="mif-chevron-thin-down" style="font-size: 1.2em; height: auto; width: auto;"></span>
                                             </div>
                                         </div>
@@ -324,35 +324,47 @@
         var loadedTables = [];
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            adicionarDadosAoGrafico(data.deviceId, data)
+            console.log(data);
+            let dataServer = new Date(data.timestamp);
+
+            // Obter a data no formato local do cliente
+            let dataLocalCliente = dataServer.toLocaleString();
+
+            const graphicData = {
+                deviceId: data.deviceId,
+                value: data.value,
+                timestamp: dataLocalCliente
+            }
+            adicionarDadosAoGrafico(data.deviceId, graphicData)
             $(`#panel-${data.deviceId}`).removeClass('bd-lightGray bg-lightGray bg-red bg-cyan bd-red bd-cyan').addClass('bg-darkGrey fg-darkGray bd-darkGray');
             $(`#panel-div-icon-${data.deviceId}`).removeClass('bg-lightGray ribbed-cyan ribbed-red').addClass('ribbed-darkGray');
+            $(`#collapse-toggle-${data.deviceId}`).show();
             if (1 === 1) { //Alterar icone conforme cadastro
                 $(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off ani-shuttle').addClass('mif-thermometer2 fg-white');
             }
             $(`#panel-label-sensor-${data.deviceId}`).addClass('fg-darkGray ');
             $(`#panel-label-value-${data.deviceId}`).text(data.value + " °C").addClass('fg-darkGray');
-            $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp).addClass('fg-darkGray');
+            $(`#panel-label-timestamp-${data.deviceId}`).text(converterDataParaFormatoLocal(dataServer)).addClass('fg-darkGray');
 
             // if (firstload === 0) {
             //     firstload = 1;
             //     //$(`#table-monitorhistory-${data.deviceId}`).data('table').loadData(`${urlserver}/get-table-monitorhistory?sensorpanelid=${data.deviceId}`, true);
             // } else {
             $(`#table-monitorhistory-${data.deviceId} tbody tr:has(td:only-child)`).remove();
-            var rows = [data.timestamp, data.value];
+            var rows = [dataLocalCliente, data.value];
             var tbody = $(`#table-monitorhistory-${data.deviceId}`).find('tbody');
 
 
             // Crie uma nova linha e adicione-a ao início do tbody
             var newRow = $('<tr>');
             if (data.value > 50) {
-                newRow.append($(`<td class="bg-red td-exception">`).text(data.timestamp));
+                newRow.append($(`<td class="bg-red td-exception">`).text(converterDataParaFormatoLocal(dataServer)));
                 newRow.append($(`<td class="bg-red td-exception text-right">`).text(data.value));
             } else if (data.value < 10) {
-                newRow.append($(`<td class="bg-cyan td-exception">`).text(data.timestamp));
+                newRow.append($(`<td class="bg-cyan td-exception">`).text(converterDataParaFormatoLocal(dataServer)));
                 newRow.append($(`<td class="bg-cyan td-exception text-right">`).text(data.value));
             } else {
-                newRow.append($(`<td>`).text(data.timestamp));
+                newRow.append($(`<td>`).text(converterDataParaFormatoLocal(dataServer)));
                 newRow.append($(`<td class="text-right">`).text(data.value));
             }
 
@@ -369,7 +381,7 @@
                 //$(`#panel-icon-${data.deviceId}`).removeClass('mif-wifi-off').addClass('mif-thermometer2').addClass('fg-white');
                 $(`#panel-${data.deviceId}`).removeClass('bd-darkGray bd-cyan').addClass('bd-red');
                 $(`#panel-div-icon-${data.deviceId}`).removeClass('ribbed-darkGray').addClass('ribbed-red');
-                $(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
+                //$(`#panel-label-timestamp-${data.deviceId}`).text(data.timestamp);
                 $(`#panel-icon-${data.deviceId}`).addClass('ani-shuttle');
 
                 $(`#span-ico-${data.deviceId}`).addClass('ani-shuttle');

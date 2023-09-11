@@ -332,3 +332,31 @@ function openDemoDialogActions(pTitle, pContent) {
     });
     $(Metro.dialog).addClass("ani-fadeInDown");
 }
+
+function formatarDataHora(data) {
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0'); // Os meses são indexados a partir de 0
+    const ano = data.getFullYear();
+    const horas = String(data.getHours()).padStart(2, '0');
+    const minutos = String(data.getMinutes()).padStart(2, '0');
+    const segundos = String(data.getSeconds()).padStart(2, '0');
+    return `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+}
+
+function converterDataParaFormatoLocal(dataISO8601) {
+    // Converter para um objeto de data
+    let data = new Date(dataISO8601);
+
+    // Obter os componentes da data
+    let dia = String(data.getDate()).padStart(2, '0');
+    let mes = String(data.getMonth() + 1).padStart(2, '0');
+    let ano = data.getFullYear();
+    let horas = String(data.getHours()).padStart(2, '0');
+    let minutos = String(data.getMinutes()).padStart(2, '0');
+    let segundos = String(data.getSeconds()).padStart(2, '0');
+
+    // Formatar a data no formato desejado
+    let dataFormatada = `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+
+    return dataFormatada;
+}
