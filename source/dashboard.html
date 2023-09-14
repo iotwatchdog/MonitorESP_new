@@ -121,13 +121,19 @@
             canvas.style.maxHeight = '290px';
             const ctx = canvas.getContext('2d');
             const novoGrafico = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: [],
                     datasets: [{
                         data: [],
                         borderWidth: 0,
-                        backgroundColor: []
+                        backgroundColor: [],
+                        borderWidth: 1,
+                        borderColor: '#444444',
+                        tension: 0.1,
+                        pointBorderColor: []
+                        // borderColor: ['darkGray','cyan','red'],
+                        // borderJoinStyle: 'round'
                     }],
                 },
                 options: {
@@ -164,10 +170,12 @@
                 }
                 grafico.data.datasets[0].data.push(valor);
                 grafico.data.datasets[0].backgroundColor.push(cor)
+                grafico.data.datasets[0].pointBorderColor.push(cor)
                 if (grafico.data.labels.length > 30) {
                     grafico.data.labels.shift();
                     grafico.data.datasets[0].data.shift();
                     grafico.data.datasets[0].backgroundColor.shift();
+                    grafico.data.datasets[0].pointBorderColor.shift()
                 }
                 grafico.update();
             } else {
